@@ -1,0 +1,173 @@
+# ----------------------------------------------------------------------------------------------------------------------------------
+# Search grids of logistic prey growth parameters for prey from each selection environment
+# ----------------------------------------------------------------------------------------------------------------------------------
+#
+# The following R-code is based on the method of:
+#
+# Rosenbaum, B. & Rall, B.C. (2018). Fitting functional responses: Direct parameter estimation by
+# simulating differential equations. Methods in Ecology and Evolution.
+#
+# Daugaard, U., Petchey, O.L. & Pennekamp, F. (2019). Warming can destabilize predator–prey 
+# interactions by shifting the functional response from Type III to Type II.
+# 
+# Lemmen, K. D. & Pennekamp, F. (2024). Food web context modifies predator foraging and weakens 
+# trophic interaction strength
+# 
+# This method estimates the logistic growth parameters directly by simulating differential equations
+#
+# For this, the package odeintr is used. For a manual about the use of the method and a detailed
+# description of the functions, see the paper of Rosenbaum and Rall (2018) mentioned above.
+# NOTE: the package odeintr is available on github for R version 4.3.2 (unsupported for newer 
+# versions of R), install with the following code:
+# devtools::install_github("thk686/odeintr")
+#
+# Rdata and CSV files with the output from the search grid process (the most computationally intense aspect
+# of the script) can be found in the folder "Trophic-interaction-modification/05 - Output/Search Grid/Dexiostoma" 
+# and can be manually loaded into the workspace.
+#
+#
+# Running the search grid (even with the same starting parameter values) may result in final parameter estimates
+# that differ slightly from those reported in the manuscript. This is expected due to the optimization procedure.
+#
+# ----------------------------------------------------------------------------------------------------------------------------------
+
+rm(list = ls())
+
+library(doParallel)
+library(tidyverse)
+library(bbmle)
+
+source("R scripts/Function_logistic_growth.R")
+
+##### Grid Search for r and K estimates #####
+pre_sg <- expand.grid(r = c(-2, -1, 0, 0.5, 1, 1.5, 2, 2.5),
+                      K.log = log(c(1000, 1500, 2000, 2500, 3000, 3500)),
+                      sigma = 0.2)
+
+pre_sg$error <- NA
+
+pre_sg$r.est <- NA
+pre_sg$K.log.est <- NA
+pre_sg$sigma.est <- NA
+
+pre_sg$converge <- NA
+pre_sg$iteration <- NA
+pre_sg$AICc <- NA
+pre_sg$logLik <- NA
+pre_sg$strtpt <- seq(1:nrow(pre_sg))
+
+#---------------------------------------------------------------------------------------------------
+# Prey from selection environment C
+#---------------------------------------------------------------------------------------------------
+load("Data/FR assay/Dataset_C.RData")
+
+growth_sim_grid <- pre_sg
+
+###### Set the computer to run in Parallel ######
+bigstatsr::nb_cores()
+
+my.cluster <- parallel::makeCluster(
+  bigstatsr::nb_cores() - 1,
+  type = "PSOCK"
+)
+
+doParallel::registerDoParallel(cl = my.cluster)
+foreach::getDoParRegistered() # returns TRUE if a doPar backend has been registered
+foreach::getDoParWorkers()    # nr. of execution workers in the currently registered doPar backend
+
+###### Run Grid ######
+preyC_growth_pe <- NA # name of file where parallel runs will be saved
+
+(t0 <- Sys.time()) # timer
+mcoptions <- list(preschedule=FALSE)
+
+preyC_growth_pe <- foreach(i = 1:nrow(growth_sim_grid),
+                          .combine = 'rbind',
+                          .options.multicore = mcoptions,
+                          .packages = c('bbmle', 'odeintr', 'tidyverse', 'R.utils'),
+                          .errorhandling = "pass") %dopar%
+  {
+    compile_sys("LG_prey", LG.prey, pars = c("r", "K"), method = "rk54")
+    
+    r<-tryCatch({
+      setTimeLimit(35*60)
+      fit = mle2(minuslogl = nll.odeint.LG.prey,
+                 method = "BFGS",
+                 control = list(maxit = 5000),
+                 start = list(r = growth_sim_grid$r[[i]],
+                              K.log = growth_sim_grid$K.log[[i]],
+                              sigma = growth_sim_grid$sigma[[i]]),
+                 data = with(list(N0 = Prey_start_density,
+                                  Ndiff = Prey_end_density - Prey_start_density,
+                                  Tt = Incubation_time),
+                             data = dplyr::filter(FR_Dataset_C, Predator_presence == 0)))
+      
+      
+      if(fit@details$convergence==0) {
+        growth_sim_grid$r.est[i] <- fit@coef[[1]]
+        growth_sim_grid$K.log.est[i] <- fit@coef[[2]]
+        
+        growth_sim_grid$sigma.est [i] <- fit@coef[[3]]
+        
+        growth_sim_grid$iteration[i] <- fit@details[[3]][[2]]
+        growth_sim_grid$converge[i] <- fit@details[[4]]
+        growth_sim_grid$AICc[i] <- AICc(fit)
+        growth_sim_grid$logLik[i] <- logLik(fit)[[1]]
+      } else {
+        growth_sim_grid$r.est[i] <- NaN
+        growth_sim_grid$K.log.est[i] <- NaN
+        
+        growth_sim_grid$converge[i] <- NaN
+        growth_sim_grid$iteration[i] <- NaN
+        growth_sim_grid$AICc[i] <- NaN
+        growth_sim_grid$logLik[i] <- NaN
+      }
+      
+      #Remove fit for next iteration
+      rm(fit)
+    }, error=function(e) list(message = e$message)) # to print error in console use {cat("ERROR :", paste(conditionMessage(e), "Combo", (i)), "\n")}
+    
+    if(length(r) > 0){
+      growth_sim_grid$error[i] <- r
+    } else {
+      growth_sim_grid$error[i] <- NaN
+    }
+    
+    return(growth_sim_grid[i,])
+    
+  }
+
+parallel::stopCluster(cl = my.cluster)
+stopImplicitCluster()
+
+tend <- Sys.time()
+tend - t0
+# beep(sound = 2, expr = NULL)
+
+preyC_growth_pe %>% arrange(AICc)
+
+# save(preyC_growth_pe, file = "Data/FR assay/02 - LG search grid/PreyC_LG_search_grid.RData")
+
+
+
+###### Best Model ######
+# Get the best fit that had no errors
+min_LG_fit_C <- preyC_growth_pe %>%
+  filter(error == "NaN") %>%
+  filter(AICc == min(preyC_growth_pe$AICc, na.rm = T)) %>%
+  dplyr::select(c(r.est:sigma.est))
+
+# Fit the LG model to prey growth using the estimated parameters of the best fit from the search grid
+preyC_LG_best_fit = mle2(minuslogl = nll.odeint.LG.prey,
+                        method = "BFGS",
+                        control = list(maxit = 5000),
+                        start = list(r = min_LG_fit_C$r.est,
+                                     K.log = min_LG_fit_C$K.log,
+                                     sigma = min_LG_fit_C$sigma),
+                        data = with(list(N0 = Prey_start_density,
+                                         Ndiff = Prey_end_density - Prey_start_density,
+                                         Tt = Incubation_time),
+                                    data = dplyr::filter(FR_Dataset_C, Predator_presence == 0)))
+
+# save(preyC_LG_best_fit, file = "FR data/LG search grid/PreyC_LG_best_fit.RData")
+
