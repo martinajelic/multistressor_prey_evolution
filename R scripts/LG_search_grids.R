@@ -59,7 +59,7 @@ pre_sg$strtpt <- seq(1:nrow(pre_sg))
 #---------------------------------------------------------------------------------------------------
 # Prey from selection environment C
 #---------------------------------------------------------------------------------------------------
-load("Data/FR assay/Dataset_C.RData")
+load("Data/FR assay/01 - Raw data/Dataset_C.RData")
 
 growth_sim_grid <- pre_sg
 
@@ -147,8 +147,6 @@ tend - t0
 preyC_growth_pe %>% arrange(AICc)
 
 # save(preyC_growth_pe, file = "Data/FR assay/02 - LG search grid/PreyC_LG_search_grid.RData")
-
-
 
 ###### Best Model ######
 # Get the best fit that had no errors
