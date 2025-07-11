@@ -6,6 +6,9 @@
 #
 # Rosenbaum, B. & Rall, B.C. (2018). Fitting functional responses: Direct parameter estimation by simulating differential equations. 
 # Methods in Ecology and Evolution.
+# 
+# Lemmen, K. D. & Pennekamp, F. (2024). Food web context modifies predator foraging and weakens 
+# trophic interaction strength.
 #
 # ----------------------------------------------------------------------------------------------------------------------------------
 
