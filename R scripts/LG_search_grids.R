@@ -8,7 +8,7 @@
 # simulating differential equations. Methods in Ecology and Evolution.
 # 
 # Lemmen, K. D. & Pennekamp, F. (2024). Food web context modifies predator foraging and weakens 
-# trophic interaction strength
+# trophic interaction strength.
 #
 # Daugaard, U., Petchey, O.L. & Pennekamp, F. (2019). Warming can destabilize predator–prey 
 # interactions by shifting the functional response from Type III to Type II.
@@ -79,12 +79,12 @@ foreach::getDoParRegistered() # returns TRUE if a doPar backend has been registe
 foreach::getDoParWorkers()    # nr. of execution workers in the currently registered doPar backend
 
 ###### Run Grid ######
-preyC_growth_pe <- NA # name of file where parallel runs will be saved
+preyC_LG_search_grid <- NA # name of file where parallel runs will be saved
 
 (t0 <- Sys.time()) # timer
 mcoptions <- list(preschedule=FALSE)
 
-preyC_growth_pe <- foreach(i = 1:nrow(growth_sim_grid),
+preyC_LG_search_grid <- foreach(i = 1:nrow(growth_sim_grid),
                           .combine = 'rbind',
                           .options.multicore = mcoptions,
                           .packages = c('bbmle', 'odeintr', 'tidyverse', 'R.utils'),
@@ -147,15 +147,15 @@ tend <- Sys.time()
 tend - t0
 # beep(sound = 2, expr = NULL)
 
-preyC_growth_pe %>% arrange(AICc)
+preyC_LG_search_grid %>% arrange(AICc)
 
-# save(preyC_growth_pe, file = "Data/FR assay/02 - LG search grid/PreyC_LG_search_grid.RData")
+# save(preyC_LG_search_grid, file = "Data/FR assay/02 - LG search grid/PreyC_LG_search_grid.RData")
 
 ###### Best Model ######
 # Get the best fit that had no errors
-min_LG_fit_C <- preyC_growth_pe %>%
+min_LG_fit_C <- preyC_LG_search_grid %>%
   filter(error == "NaN") %>%
-  filter(AICc == min(preyC_growth_pe$AICc, na.rm = T)) %>%
+  filter(AICc == min(preyC_LG_search_grid$AICc, na.rm = T)) %>%
   dplyr::select(c(r.est:sigma.est))
 
 # Fit the LG model to prey growth using the estimated parameters of the best fit from the search grid
@@ -201,12 +201,12 @@ foreach::getDoParRegistered() # returns TRUE if a doPar backend has been registe
 foreach::getDoParWorkers()    # nr. of execution workers in the currently registered doPar backend
 
 ###### Run Grid ######
-preyS_growth_pe <- NA # name of file where parallel runs will be saved
+preyS_LG_search_grid <- NA # name of file where parallel runs will be saved
 
 (t0 <- Sys.time()) # timer
 mcoptions <- list(preschedule=FALSE)
 
-preyS_growth_pe <- foreach(i = 1:nrow(growth_sim_grid),
+preyS_LG_search_grid <- foreach(i = 1:nrow(growth_sim_grid),
                            .combine = 'rbind',
                            .options.multicore = mcoptions,
                            .packages = c('bbmle', 'odeintr', 'tidyverse', 'R.utils'),
@@ -269,15 +269,15 @@ tend <- Sys.time()
 tend - t0
 # beep(sound = 2, expr = NULL)
 
-preyS_growth_pe %>% arrange(AICc)
+preyS_LG_search_grid %>% arrange(AICc)
 
-# save(preyS_growth_pe, file = "Data/FR assay/02 - LG search grid/PreyS_LG_search_grid.RData")
+# save(preyS_LG_search_grid, file = "Data/FR assay/02 - LG search grid/PreyS_LG_search_grid.RData")
 
 ###### Best Model ######
 # Get the best fit that had no errors
-min_LG_fit_S <- preyS_growth_pe %>%
+min_LG_fit_S <- preyS_LG_search_grid %>%
   filter(error == "NaN") %>%
-  filter(AICc == min(preyS_growth_pe$AICc, na.rm = T)) %>%
+  filter(AICc == min(preyS_LG_search_grid$AICc, na.rm = T)) %>%
   dplyr::select(c(r.est:sigma.est))
 
 # Fit the LG model to prey growth using the estimated parameters of the best fit from the search grid
@@ -324,12 +324,12 @@ foreach::getDoParRegistered() # returns TRUE if a doPar backend has been registe
 foreach::getDoParWorkers()    # nr. of execution workers in the currently registered doPar backend
 
 ###### Run Grid ######
-preyT_growth_pe <- NA # name of file where parallel runs will be saved
+preyT_LG_search_grid <- NA # name of file where parallel runs will be saved
 
 (t0 <- Sys.time()) # timer
 mcoptions <- list(preschedule=FALSE)
 
-preyT_growth_pe <- foreach(i = 1:nrow(growth_sim_grid),
+preyT_LG_search_grid <- foreach(i = 1:nrow(growth_sim_grid),
                            .combine = 'rbind',
                            .options.multicore = mcoptions,
                            .packages = c('bbmle', 'odeintr', 'tidyverse', 'R.utils'),
@@ -392,15 +392,15 @@ tend <- Sys.time()
 tend - t0
 # beep(sound = 2, expr = NULL)
 
-preyT_growth_pe %>% arrange(AICc)
+preyT_LG_search_grid %>% arrange(AICc)
 
-# save(preyT_growth_pe, file = "Data/FR assay/02 - LG search grid/PreyT_LG_search_grid.RData")
+# save(preyT_LG_search_grid, file = "Data/FR assay/02 - LG search grid/PreyT_LG_search_grid.RData")
 
 ###### Best Model ######
 # Get the best fit that had no errors
-min_LG_fit_T <- preyT_growth_pe %>%
+min_LG_fit_T <- preyT_LG_search_grid %>%
   filter(error == "NaN") %>%
-  filter(AICc == min(preyT_growth_pe$AICc, na.rm = T)) %>%
+  filter(AICc == min(preyT_LG_search_grid$AICc, na.rm = T)) %>%
   dplyr::select(c(r.est:sigma.est))
 
 # Fit the LG model to prey growth using the estimated parameters of the best fit from the search grid
@@ -444,12 +444,12 @@ foreach::getDoParRegistered() # returns TRUE if a doPar backend has been registe
 foreach::getDoParWorkers()    # nr. of execution workers in the currently registered doPar backend
 
 ###### Run Grid ######
-preyST_growth_pe <- NA # name of file where parallel runs will be saved
+preyST_LG_search_grid <- NA # name of file where parallel runs will be saved
 
 (t0 <- Sys.time()) # timer
 mcoptions <- list(preschedule=FALSE)
 
-preyST_growth_pe <- foreach(i = 1:nrow(growth_sim_grid),
+preyST_LG_search_grid <- foreach(i = 1:nrow(growth_sim_grid),
                             .combine = 'rbind',
                             .options.multicore = mcoptions,
                             .packages = c('bbmle', 'odeintr', 'tidyverse', 'R.utils'),
@@ -512,15 +512,15 @@ tend <- Sys.time()
 tend - t0
 # beep(sound = 2, expr = NULL)
 
-preyST_growth_pe %>% arrange(AICc)
+preyST_LG_search_grid %>% arrange(AICc)
 
-# save(preyST_growth_pe, file = "Data/FR assay/02 - LG search grid/PreyST_LG_search_grid.RData")
+# save(preyST_LG_search_grid, file = "Data/FR assay/02 - LG search grid/PreyST_LG_search_grid.RData")
 
 ###### Best Model ######
 # Get the best fit that had no errors
-min_LG_fit_ST <- preyST_growth_pe %>%
+min_LG_fit_ST <- preyST_LG_search_grid %>%
   filter(error == "NaN") %>%
-  filter(AICc == min(preyST_growth_pe$AICc, na.rm = T)) %>%
+  filter(AICc == min(preyST_LG_search_grid$AICc, na.rm = T)) %>%
   dplyr::select(c(r.est:sigma.est))
 
 # Fit the LG model to prey growth using the estimated parameters of the best fit from the search grid
