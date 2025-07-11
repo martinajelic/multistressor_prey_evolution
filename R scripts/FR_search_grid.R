@@ -88,9 +88,6 @@ fr_pre_sg <- expand.grid(bC.log = c(seq(-5, 5, length.out = 6)),
                          KT.log = preyT_LG_best_fit@coef[["K.log"]],
                          KST.log = preyST_LG_best_fit@coef[["K.log"]])
 
-# DELETE THIS!!!
-# fr_pre_sg <- fr_pre_sg[1,]
-
 fr_pre_sg$error <- NA
 
 fr_pre_sg$bC.log.est <- NA
@@ -144,16 +141,18 @@ FR_search_grid <- foreach(i = 1:nrow(fr_sg),
                  .packages = c('bbmle', 'odeintr', 'tidyverse', 'R.utils'),
                  .errorhandling = "pass") %dopar%
   {
-    compile_sys("FRII_gen_pred_mP", FRII.gen.pred.mP, pars = c("b","h","r","K","c","m"), method = "rk54")
+    compile_sys("FRII_gen_pred_mP", FRII.gen.pred.mP,
+                pars = c("b", "h", "r", "K", "c", "m"),
+                method = "rk54")
     
     r<-tryCatch({ 
       setTimeLimit(35*60)
       fit = mle2(minuslogl = nll.odeint.full.model,
-                 method="BFGS",
-                 browse_obj=F,
-                 skip.hessian=F, 
+                 method = "BFGS",
+                 browse_obj = F,
+                 skip.hessian = F, 
                  trace = T,
-                 control = list(trace=1, REPORT=1, maxit = 5000),
+                 control = list(trace = 1, REPORT = 1, maxit = 5000),
                  fixed = list(rC = fr_sg$rC[[i]],
                               rS = fr_sg$rS[[i]],
                               rT = fr_sg$rT[[i]],
@@ -177,7 +176,7 @@ FR_search_grid <- foreach(i = 1:nrow(fr_sg),
                               sigma = fr_sg$sigma[[i]],
                               c = fr_sg$c[[i]]),
                  data = with(list(N0 = Prey_start_density,
-                                  Ndead = Prey_start_density - Prey_end__density,
+                                  Ndead = Prey_start_density - Prey_end_density,
                                   P = Predator_start_density,
                                   P.end = Predator_end_density * 0.66, # Need consumer counts (corrected in the function)
                                   Tt = Incubation_time,
@@ -297,7 +296,7 @@ best_FR_fit = mle2(minuslogl = nll.odeint.full.model,
                                         sigma = min_FR_params$sigma.est,
                                         c = min_FR_params$c.est),
                            data = with(list(N0 = Prey_start_density,
-                                            Ndead = Prey_start_density - Prey_end__density,
+                                            Ndead = Prey_start_density - Prey_end_density,
                                             P = Predator_start_density,
                                             P.end = Predator_end_density * 0.66, # Need consumer counts (corrected in the function)
                                             Tt = Incubation_time,
