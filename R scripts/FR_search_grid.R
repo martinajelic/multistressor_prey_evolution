@@ -56,8 +56,8 @@ source("R scripts/Function_FR_model_ANOVA_like.R")
 
 # ------------------------------------------------------------------------------
 # All r and K estimates have been searched previously and individually for each
-# SEL environment (see FR_search_grid_C_type2.R, FR_search_grid_S_type2.R, 
-# FR_search_grid_T_type2.R, FR_search_grid_ST_type2.R)
+# prey selection environment (see R scripts/LG_search_grids.R). These values
+# are fixed when fitting the ANOVA-like FR function
 # ------------------------------------------------------------------------------
 load("Data/FR assay/02 - LG search grid/PreyC_LG_best_fit.RData")
 load("Data/FR assay/02 - LG search grid/PreyS_LG_best_fit.RData")
