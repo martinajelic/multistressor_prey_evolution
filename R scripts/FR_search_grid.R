@@ -16,20 +16,21 @@
 # 
 # This method estimates the functional response parameters as functions of selection environment
 # directly by simulating differential equations. The functional response parameters are estimated
-# using an ANOVA-like fitting procedure, where C-coefficients (bC.log, hC, mC) are the coefficients
-# of functional response of predators fed with prey C, S and T coefficients (bS.log, hS, mS, bT.log,
-# hT, mT) are differences in parameters between predators fed with prey C and predators fed with 
-# prey S and prey T, respectively. ST-coefficients are the differences between observed parameters
-# of predators fed with ST prey and the expected parameters if the effects of high selection salinity
-# and high selection temperature were additive.
+# using an ANOVA-like fitting procedure, where:
+#   - C-coefficients (bC.log, hC, mC) are the coefficients of functional response of predators fed 
+#     with prey C
+#   - S and T coefficients (bS.log, hS, mS, bT.log, hT, mT) are differences in parameters between 
+#     predators fed with prey C and predators fed with prey S and prey T, respectively
+#   - ST-coefficients (bST.log, hST, mST) are the differences between observed parameters of
+#     predators fed with ST prey and the expected parameters if the effects of high selection 
+#     salinity and high selection temperature were additive.
 #
 # For this, the package odeintr is used. For a manual about the use of the method and a detailed
 # description of the functions, see the paper of Rosenbaum and Rall (2018) mentioned above.
 # 
-# NOTE: the package odeintr is available on github for R version 4.3.2 and is unsupported for newer 
-# versions of R at the moment, install with the following code:
-# devtools::install_github("thk686/odeintr")
-#
+# NOTE: the package odeintr is available on github (thk686/odeintr) for R version 4.3.2 and is 
+# unsupported for newer versions of R at the moment.
+# 
 # Rdata files with the output from the search grid process can be found in the folder
 # "Data/FR assay/03 - FR search grid" and can be manually loaded into the workspace.
 #
@@ -133,7 +134,7 @@ foreach::getDoParWorkers()
 FR_search_grid <- NA # name of file where parallel runs will be saved
 
 (t0<-Sys.time()) # timer
-mcoptions <- list(preschedule=FALSE)
+mcoptions <- list(preschedule = FALSE)
 
 FR_search_grid <- foreach(i = 1:nrow(fr_sg),
                  .combine = 'rbind',
@@ -178,7 +179,7 @@ FR_search_grid <- foreach(i = 1:nrow(fr_sg),
                  data = with(list(N0 = Prey_start_density,
                                   Ndead = Prey_start_density - Prey_end_density,
                                   P = Predator_start_density,
-                                  P.end = Predator_end_density * 0.66, # Need consumer counts (corrected in the function)
+                                  P.end = Predator_end_density * 0.66, # Need consumer counts (0.66mL of 1mL of sample were counted)
                                   Tt = Incubation_time,
                                   SEL_environment = SEL_environment,
                                   separate_environments = FALSE),
@@ -256,11 +257,11 @@ tend-t0
 
 FR_search_grid %>% arrange(AICc)
 
-# save(FR_search_grid, file = "Data/FR assay/03 - FR search grid/FR_ANOVA_like_search_grid.RData")
+save(FR_search_grid, file = "Data/FR assay/03 - FR search grid/FR_ANOVA_like_search_grid.RData")
 
 
 ###### Best Model ######
-# Get all fits that had no errors and are within 2 AICc from the best fit
+# Get the best fit that had no errors, based on AICc
 min_FR_params <- FR_search_grid %>% 
   filter(error == "NaN") %>% 
   filter(AICc == min(FR_search_grid$AICc, na.rm = T)) %>%
@@ -298,7 +299,7 @@ best_FR_fit = mle2(minuslogl = nll.odeint.full.model,
                            data = with(list(N0 = Prey_start_density,
                                             Ndead = Prey_start_density - Prey_end_density,
                                             P = Predator_start_density,
-                                            P.end = Predator_end_density * 0.66, # Need consumer counts (corrected in the function)
+                                            P.end = Predator_end_density * 0.66, # Need consumer counts (0.66mL of 1mL of sample were counted)
                                             Tt = Incubation_time,
                                             SEL_environment = SEL_environment,
                                             separate_environments = FALSE),
