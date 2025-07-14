@@ -305,41 +305,38 @@ predictions_ST <- apply(param_sim, 1, function(p) {
   Ndead <- exp(p[["bC.log"]] + p[["bS.log"]] + p[["bT.log"]] + p[["bST.log"]]) * N_ST / (1 + exp(p[["bC.log"]] + p[["bS.log"]] + p[["bT.log"]] + p[["bST.log"]]) * (p[["hC"]] + p[["hS"]] + p[["hT"]] + p[["hST"]]) * N_ST)
 })
 
-
-# Creating datasets for plotting and filtering
-predictions_dd_C <- data.frame(predictions_C) %>%
-  pivot_longer(cols = 1:n_sim, names_to = "Simulation_nr", values_to = "Ndead")
-predictions_dd_C$N <- rep(N_C, each = n_sim)
-predictions_dd_C$b.log.estimate <- rep(param_sim[,"bC.log"], times = length(N_C))
-predictions_dd_C$h.estimate <- rep(param_sim[,"hC"], times = length(N_C))
-predictions_dd_C$m.estimate <- rep(param_sim[,"mC"], times = length(N_C))
-
-predictions_dd_S <- data.frame(predictions_S) %>%
-  pivot_longer(cols = 1:n_sim, names_to = "Simulation_nr", values_to = "Ndead")
-predictions_dd_S$N <- rep(N_S, each = n_sim)
-predictions_dd_S$b.log.estimate <- rep(param_sim[,"bC.log"] + param_sim[,"bS.log"], times = length(N_S))
-predictions_dd_S$h.estimate <- rep(param_sim[,"hC"] + param_sim[,"hS"], times = length(N_S))
-predictions_dd_S$m.estimate <- rep(param_sim[,"mC"] + param_sim[,"mS"], times = length(N_S))
-
-predictions_dd_T <- data.frame(predictions_T) %>%
-  pivot_longer(cols = 1:n_sim, names_to = "Simulation_nr", values_to = "Ndead")
-predictions_dd_T$N <- rep(N_T, each = n_sim)
-predictions_dd_T$b.log.estimate <- rep(param_sim[,"bC.log"] + param_sim[,"bT.log"], times = length(N_T))
-predictions_dd_T$h.estimate <- rep(param_sim[,"hC"] + param_sim[,"hT"], times = length(N_T))
-predictions_dd_T$m.estimate <- rep(param_sim[,"mC"] + param_sim[,"mT"], times = length(N_T))
-
-predictions_dd_ST <- data.frame(predictions_ST) %>%
-  pivot_longer(cols = 1:n_sim, names_to = "Simulation_nr", values_to = "Ndead")
-predictions_dd_ST$N <- rep(N_ST, each = n_sim)
-predictions_dd_ST$b.log.estimate <- rep(param_sim[,"bC.log"] + param_sim[,"bS.log"] + param_sim[,"bT.log"] + param_sim[,"bST.log"], times = length(N_ST))
-predictions_dd_ST$h.estimate <- rep(param_sim[,"hC"] + param_sim[,"hS"] + param_sim[,"hT"] + param_sim[,"hST"], times = length(N_ST))
-predictions_dd_ST$m.estimate <- rep(param_sim[,"mC"] + param_sim[,"mS"] + param_sim[,"mT"] + param_sim[,"mST"], times = length(N_ST))
-
-
-
-
 # ------------------- Computing 95% CIs -------------------
+# --- Uncomment the following code to create datasets for plotting 1000 fits ---
+# predictions_dd_C <- data.frame(predictions_C) %>%
+#   pivot_longer(cols = 1:n_sim, names_to = "Simulation_nr", values_to = "Ndead")
+# predictions_dd_C$N <- rep(N_C, each = n_sim)
+# predictions_dd_C$b.log.estimate <- rep(param_sim[,"bC.log"], times = length(N_C))
+# predictions_dd_C$h.estimate <- rep(param_sim[,"hC"], times = length(N_C))
+# predictions_dd_C$m.estimate <- rep(param_sim[,"mC"], times = length(N_C))
+# 
+# predictions_dd_S <- data.frame(predictions_S) %>%
+#   pivot_longer(cols = 1:n_sim, names_to = "Simulation_nr", values_to = "Ndead")
+# predictions_dd_S$N <- rep(N_S, each = n_sim)
+# predictions_dd_S$b.log.estimate <- rep(param_sim[,"bC.log"] + param_sim[,"bS.log"], times = length(N_S))
+# predictions_dd_S$h.estimate <- rep(param_sim[,"hC"] + param_sim[,"hS"], times = length(N_S))
+# predictions_dd_S$m.estimate <- rep(param_sim[,"mC"] + param_sim[,"mS"], times = length(N_S))
+# 
+# predictions_dd_T <- data.frame(predictions_T) %>%
+#   pivot_longer(cols = 1:n_sim, names_to = "Simulation_nr", values_to = "Ndead")
+# predictions_dd_T$N <- rep(N_T, each = n_sim)
+# predictions_dd_T$b.log.estimate <- rep(param_sim[,"bC.log"] + param_sim[,"bT.log"], times = length(N_T))
+# predictions_dd_T$h.estimate <- rep(param_sim[,"hC"] + param_sim[,"hT"], times = length(N_T))
+# predictions_dd_T$m.estimate <- rep(param_sim[,"mC"] + param_sim[,"mT"], times = length(N_T))
+# 
+# predictions_dd_ST <- data.frame(predictions_ST) %>%
+#   pivot_longer(cols = 1:n_sim, names_to = "Simulation_nr", values_to = "Ndead")
+# predictions_dd_ST$N <- rep(N_ST, each = n_sim)
+# predictions_dd_ST$b.log.estimate <- rep(param_sim[,"bC.log"] + param_sim[,"bS.log"] + param_sim[,"bT.log"] + param_sim[,"bST.log"], times = length(N_ST))
+# predictions_dd_ST$h.estimate <- rep(param_sim[,"hC"] + param_sim[,"hS"] + param_sim[,"hT"] + param_sim[,"hST"], times = length(N_ST))
+# predictions_dd_ST$m.estimate <- rep(param_sim[,"mC"] + param_sim[,"mS"] + param_sim[,"mT"] + param_sim[,"mST"], times = length(N_ST))
+
 # ------------------ prey C ------------------
+# --- Uncomment the following code to plot 1000 fits ---
 # ggplot(predictions_dd_C, aes(x = N, y = Ndead, group = Simulation_nr)) +
 #   geom_line(linewidth = .5, alpha = .3)
 
@@ -348,6 +345,7 @@ response_lower_C <- apply(predictions_C, 1, quantile, probs = 0.025, na.rm = T)
 response_upper_C <- apply(predictions_C, 1, quantile, probs = 0.975, na.rm = T)
 
 # ------------------ prey S ------------------
+# --- Uncomment the following code to plot 1000 fits ---
 # ggplot(predictions_dd_S, aes(x = N, y = Ndead, group = Simulation_nr)) +
 #   geom_line(linewidth = .5, alpha = .3)
 
@@ -356,6 +354,7 @@ response_lower_S <- apply(predictions_S, 1, quantile, probs = 0.025, na.rm = T)
 response_upper_S <- apply(predictions_S, 1, quantile, probs = 0.975, na.rm = T)
 
 # ------------------ prey T ------------------
+# --- Uncomment the following code to plot 1000 fits ---
 # ggplot(predictions_dd_T, aes(x = N, y = Ndead, group = Simulation_nr)) +
 #   geom_line(linewidth = .5, alpha = .3)
 
@@ -364,6 +363,7 @@ response_lower_T <- apply(predictions_T, 1, quantile, probs = 0.025, na.rm = T)
 response_upper_T <- apply(predictions_T, 1, quantile, probs = 0.975, na.rm = T)
 
 # ------------------ prey ST ------------------
+# --- Uncomment the following code to plot 1000 fits ---
 # ggplot(predictions_dd_ST, aes(x = N, y = Ndead, group = Simulation_nr)) +
 #   geom_line(linewidth = .5, alpha = .3)
 
