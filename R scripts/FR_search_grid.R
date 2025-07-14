@@ -257,7 +257,7 @@ tend-t0
 
 FR_search_grid %>% arrange(AICc)
 
-save(FR_search_grid, file = "Data/FR assay/03 - FR search grid/FR_ANOVA_like_search_grid.RData")
+# save(FR_search_grid, file = "Data/FR assay/03 - FR search grid/FR_ANOVA_like_search_grid.RData")
 
 
 ###### Best Model ######
@@ -305,5 +305,7 @@ best_FR_fit = mle2(minuslogl = nll.odeint.full.model,
                                             separate_environments = FALSE),
                                        data = dplyr::filter(FR_all, Predator_presence == 1)))
 
-# save(best_FR_fit, file = "Data/FR assay/03 - FR search grid/FR_ANOVA_like_best_fit.RData")
+summary(best_FR_fit)
+
+save(best_FR_fit, file = "Data/FR assay/03 - FR search grid/FR_ANOVA_like_best_fit.RData")
 

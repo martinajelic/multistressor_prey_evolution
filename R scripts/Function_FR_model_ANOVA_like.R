@@ -71,15 +71,15 @@ eaten.odeint.general.pred = function(N0, b, h, r, K, c, m, Tt, P, steps = 100){
 # There is an option to choose the reference level for different prey selection environments. Note 
 # that the meaning of the coefficients changes based on reference environment (see comments).
 nll.odeint.full.model = function(Ndead, N0,
-                                 bC.log, bS.log, bT.log, bST.log,
-                                 hC, hS, hT, hST, 
-                                 rC, rS, rT, rST, 
-                                 KC.log, KS.log, KT.log, KST.log,
-                                 c,
-                                 mC, mS, mT, mST, Tt, 
-                                 P, P.end, steps = 100, sigma,
-                                 SEL_environment,
-                                 reference_environment = "C"){ # Default reference is environment C
+                                           bC.log, bS.log, bT.log, bST.log,
+                                           hC, hS, hT, hST, 
+                                           rC, rS, rT, rST, 
+                                           KC.log, KS.log, KT.log, KST.log,
+                                           c,
+                                           mC, mS, mT, mST, Tt, 
+                                           P, P.end, steps = 100, sigma,
+                                           SEL_environment,
+                                           reference_environment = "C"){ # Default reference is environment C
   if(sigma <= 0) return(Inf)
   
   if(reference_environment == "C") {
@@ -96,56 +96,56 @@ nll.odeint.full.model = function(Ndead, N0,
     # Get estimated prey consumed and predator growth given vital rates b, h, r, K, and c
     # Parameters for S, T and ST are all zero
     tempC = eaten.odeint.general.pred(N0 = N0[SEL_environment == "C"],        # Prey start dens
-                                            b = exp(bC.log),
-                                            h = hC,
-                                            r = rC,
-                                            K = exp(KC.log),
-                                            c = c,
-                                            m = mC,
-                                            Tt = Tt[SEL_environment == "C"],        # Incubation time
-                                            P = P[SEL_environment == "C"],          # Predator start dens
-                                            steps = steps)  # Number of timesteps to simulate in Tt
+                                      b = exp(bC.log),
+                                      h = hC,
+                                      r = rC,
+                                      K = exp(KC.log),
+                                      c = c,
+                                      m = mC,
+                                      Tt = Tt[SEL_environment == "C"],        # Incubation time
+                                      P = P[SEL_environment == "C"],          # Predator start dens
+                                      steps = steps)  # Number of timesteps to simulate in Tt
     
     ### Environment S
     # Get estimated prey consumed and predator growth given vital rates b, h, r, K, and c
     # Parameters for T and ST are all zero
     tempS = eaten.odeint.general.pred(N0 = N0[SEL_environment == "S"],        # Prey start dens
-                                            b = exp(bC.log + bS.log),
-                                            h = hC + hS,
-                                            r = rS,              # independent r's for SEL environments
-                                            K = exp(KS.log),     # independent K's for SEL environments
-                                            c = c,
-                                            m = mC + mS,
-                                            Tt = Tt[SEL_environment == "S"],        # Incubation time
-                                            P = P[SEL_environment == "S"],          # Predator start dens
-                                            steps = steps)  # Number of timesteps to simulate in Tt
+                                      b = exp(bC.log + bS.log),
+                                      h = hC + hS,
+                                      r = rS,              # independent r's for SEL environments
+                                      K = exp(KS.log),     # independent K's for SEL environments
+                                      c = c,
+                                      m = mC + mS,
+                                      Tt = Tt[SEL_environment == "S"],        # Incubation time
+                                      P = P[SEL_environment == "S"],          # Predator start dens
+                                      steps = steps)  # Number of timesteps to simulate in Tt
     
     ### Environment T
     # Get estimated prey consumed and predator growth given vital rates b, h, r, K, and c
     # Parameters for S and ST are all zero
     tempT = eaten.odeint.general.pred(N0 = N0[SEL_environment == "T"],        # Prey start dens
-                                            b = exp(bC.log + bT.log),
-                                            h = hC + hT,
-                                            r = rT,              # independent r's for SEL environments
-                                            K = exp(KT.log),     # independent K's for SEL environments
-                                            c = c,
-                                            m = mC + mT,
-                                            Tt = Tt[SEL_environment == "T"],        # Incubation time
-                                            P = P[SEL_environment == "T"],          # Predator start dens
-                                            steps = steps)  # Number of timesteps to simulate in Tt
+                                      b = exp(bC.log + bT.log),
+                                      h = hC + hT,
+                                      r = rT,              # independent r's for SEL environments
+                                      K = exp(KT.log),     # independent K's for SEL environments
+                                      c = c,
+                                      m = mC + mT,
+                                      Tt = Tt[SEL_environment == "T"],        # Incubation time
+                                      P = P[SEL_environment == "T"],          # Predator start dens
+                                      steps = steps)  # Number of timesteps to simulate in Tt
     
     ### Environment ST
     # Get estimated prey consumed and predator growth given vital rates b, h, r, K, and c
     tempST = eaten.odeint.general.pred(N0 = N0[SEL_environment == "ST"],        # Prey start dens
-                                             b = exp(bC.log + bS.log + bT.log + bST.log),
-                                             h = hC + hS + hT + hST,
-                                             r = rST,              # independent r's for SEL environments
-                                             K = exp(KST.log),     # independent K's for SEL environments
-                                             c = c,
-                                             m = mC + mS + mT + mST,
-                                             Tt = Tt[SEL_environment == "ST"],        # Incubation time
-                                             P = P[SEL_environment == "ST"],          # Predator start dens
-                                             steps = steps)  # Number of timesteps to simulate in Tt
+                                       b = exp(bC.log + bS.log + bT.log + bST.log),
+                                       h = hC + hS + hT + hST,
+                                       r = rST,              # independent r's for SEL environments
+                                       K = exp(KST.log),     # independent K's for SEL environments
+                                       c = c,
+                                       m = mC + mS + mT + mST,
+                                       Tt = Tt[SEL_environment == "ST"],        # Incubation time
+                                       P = P[SEL_environment == "ST"],          # Predator start dens
+                                       steps = steps)  # Number of timesteps to simulate in Tt
     
     # Compute nll for each environment and sum them for general nll
     
@@ -159,7 +159,7 @@ nll.odeint.full.model = function(Ndead, N0,
                         log = T))
     
     nll2C = -1*sum(dpois(x = P.end[SEL_environment == "C"],           # Measured predator end counts in 0.66 mL
-                         lambda = P[SEL_environment == "C"] + zC * 0.66, # Estimated predator end counts in 0.66 mL (Start pred counts + estimated new preds)
+                         lambda = (P[SEL_environment == "C"] + zC) * 0.66, # Estimated predator end counts in 0.66 mL (Start pred counts + estimated new preds)
                          log = T))
     
     ### Environment S
@@ -172,7 +172,7 @@ nll.odeint.full.model = function(Ndead, N0,
                         log = T))
     
     nll2S = -1*sum(dpois(x = P.end[SEL_environment == "S"],           # Measured predator end counts in 0.66 mL
-                         lambda = P[SEL_environment == "S"] + zS * 0.66, # Estimated predator end counts in 0.66 mL (Start pred counts + estimated new preds)
+                         lambda = (P[SEL_environment == "S"] + zS) * 0.66, # Estimated predator end counts in 0.66 mL (Start pred counts + estimated new preds)
                          log = T))
     
     ### Environment T
@@ -185,7 +185,7 @@ nll.odeint.full.model = function(Ndead, N0,
                         log = T))
     
     nll2T = -1*sum(dpois(x = P.end[SEL_environment == "T"],           # Measured predator end counts in 0.66 mL
-                         lambda = P[SEL_environment == "T"] + zT * 0.66, # Estimated predator end counts in 0.66 mL (Start pred counts + estimated new preds)
+                         lambda = (P[SEL_environment == "T"] + zT) * 0.66, # Estimated predator end counts in 0.66 mL (Start pred counts + estimated new preds)
                          log = T))
     
     
@@ -199,7 +199,7 @@ nll.odeint.full.model = function(Ndead, N0,
                          log = T))
     
     nll2ST = -1*sum(dpois(x = P.end[SEL_environment == "ST"],           # Measured predator end counts in 0.66 mL
-                          lambda = P[SEL_environment == "ST"] + zST * 0.66, # Estimated predator end counts in 0.66 mL (Start pred counts + estimated new preds)
+                          lambda = (P[SEL_environment == "ST"] + zST) * 0.66, # Estimated predator end counts in 0.66 mL (Start pred counts + estimated new preds)
                           log = T))
     
     # General nll value to minimize
@@ -226,59 +226,59 @@ nll.odeint.full.model = function(Ndead, N0,
     # Parameters for S, T and ST are all zero
     # We only need to remove the effect of salinity (represented by C-parameters)
     tempC = eaten.odeint.general.pred(N0 = N0[SEL_environment == "C"],        # Prey start dens
-                                            b = exp(bS.log + bC.log),
-                                            h = hS + hC,
-                                            r = rC,
-                                            K = exp(KC.log),
-                                            c = c,
-                                            m = mS + mC,
-                                            Tt = Tt[SEL_environment == "C"],        # Incubation time
-                                            P = P[SEL_environment == "C"],          # Predator start dens
-                                            steps = steps)  # Number of timesteps to simulate in Tt
+                                      b = exp(bS.log + bC.log),
+                                      h = hS + hC,
+                                      r = rC,
+                                      K = exp(KC.log),
+                                      c = c,
+                                      m = mS + mC,
+                                      Tt = Tt[SEL_environment == "C"],        # Incubation time
+                                      P = P[SEL_environment == "C"],          # Predator start dens
+                                      steps = steps)  # Number of timesteps to simulate in Tt
     
     ### Environment S
     # Get estimated prey consumed and predator growth given vital rates b, h, r, K, and c
     # Parameters for S, T and ST are all zero
     tempS = eaten.odeint.general.pred(N0 = N0[SEL_environment == "S"],        # Prey start dens
-                                            b = exp(bS.log),
-                                            h = hS,
-                                            r = rS,              # independent r's for SEL environments
-                                            K = exp(KS.log),     # independent K's for SEL environments
-                                            c = c,
-                                            m = mS,
-                                            Tt = Tt[SEL_environment == "S"],        # Incubation time
-                                            P = P[SEL_environment == "S"],          # Predator start dens
-                                            steps = steps)  # Number of timesteps to simulate in Tt
+                                      b = exp(bS.log),
+                                      h = hS,
+                                      r = rS,              # independent r's for SEL environments
+                                      K = exp(KS.log),     # independent K's for SEL environments
+                                      c = c,
+                                      m = mS,
+                                      Tt = Tt[SEL_environment == "S"],        # Incubation time
+                                      P = P[SEL_environment == "S"],          # Predator start dens
+                                      steps = steps)  # Number of timesteps to simulate in Tt
     
     ### Environment T
     # Get estimated prey consumed and predator growth given vital rates b, h, r, K, and c
     # Parameters for S, T and ST are all zero
     # We need to remove the effect of salinity and add the effect of temperature, plus interaction
     tempT = eaten.odeint.general.pred(N0 = N0[SEL_environment == "T"],        # Prey start dens
-                                            b = exp(bS.log + bT.log + bC.log + bST.log),
-                                            h = hS + hT + hC + hST,
-                                            r = rT,              # independent r's for SEL environments
-                                            K = exp(KT.log),     # independent K's for SEL environments
-                                            c = c,
-                                            m = mS + mT + mC + mST,
-                                            Tt = Tt[SEL_environment == "T"],        # Incubation time
-                                            P = P[SEL_environment == "T"],          # Predator start dens
-                                            steps = steps)  # Number of timesteps to simulate in Tt
+                                      b = exp(bS.log + bT.log + bC.log + bST.log),
+                                      h = hS + hT + hC + hST,
+                                      r = rT,              # independent r's for SEL environments
+                                      K = exp(KT.log),     # independent K's for SEL environments
+                                      c = c,
+                                      m = mS + mT + mC + mST,
+                                      Tt = Tt[SEL_environment == "T"],        # Incubation time
+                                      P = P[SEL_environment == "T"],          # Predator start dens
+                                      steps = steps)  # Number of timesteps to simulate in Tt
     
     ### Environment ST
     # Get estimated prey consumed and predator growth given vital rates b, h, r, K, and c
     # Parameters for S, T and ST are all zero
     # We only need to add the effect of temperature
     tempST = eaten.odeint.general.pred(N0 = N0[SEL_environment == "ST"],        # Prey start dens
-                                             b = exp(bS.log + bT.log),
-                                             h = hS + hT,
-                                             r = rST,              # independent r's for SEL environments
-                                             K = exp(KST.log),     # independent K's for SEL environments
-                                             c = c,
-                                             m = mS + mT,
-                                             Tt = Tt[SEL_environment == "ST"],        # Incubation time
-                                             P = P[SEL_environment == "ST"],          # Predator start dens
-                                             steps = steps)  # Number of timesteps to simulate in Tt
+                                       b = exp(bS.log + bT.log),
+                                       h = hS + hT,
+                                       r = rST,              # independent r's for SEL environments
+                                       K = exp(KST.log),     # independent K's for SEL environments
+                                       c = c,
+                                       m = mS + mT,
+                                       Tt = Tt[SEL_environment == "ST"],        # Incubation time
+                                       P = P[SEL_environment == "ST"],          # Predator start dens
+                                       steps = steps)  # Number of timesteps to simulate in Tt
     
     # Compute nll for each environment and sum them for general nll
     
@@ -292,7 +292,7 @@ nll.odeint.full.model = function(Ndead, N0,
                         log = T))
     
     nll2C = -1*sum(dpois(x = P.end[SEL_environment == "C"],           # Measured predator end counts in 0.66 mL
-                         lambda = P[SEL_environment == "C"] + zC * 0.66, # Estimated predator end counts in 0.66 mL (Start pred counts + estimated new preds)
+                         lambda = (P[SEL_environment == "C"] + zC) * 0.66, # Estimated predator end counts in 0.66 mL (Start pred counts + estimated new preds)
                          log = T))
     
     ### Environment S
@@ -305,7 +305,7 @@ nll.odeint.full.model = function(Ndead, N0,
                         log = T))
     
     nll2S = -1*sum(dpois(x = P.end[SEL_environment == "S"],           # Measured predator end counts in 0.66 mL
-                         lambda = P[SEL_environment == "S"] + zS * 0.66, # Estimated predator end counts in 0.66 mL (Start pred counts + estimated new preds)
+                         lambda = (P[SEL_environment == "S"] + zS) * 0.66, # Estimated predator end counts in 0.66 mL (Start pred counts + estimated new preds)
                          log = T))
     
     ### Environment T
@@ -318,7 +318,7 @@ nll.odeint.full.model = function(Ndead, N0,
                         log = T))
     
     nll2T = -1*sum(dpois(x = P.end[SEL_environment == "T"],           # Measured predator end counts in 0.66 mL
-                         lambda = P[SEL_environment == "T"] + zT * 0.66, # Estimated predator end counts in 0.66 mL (Start pred counts + estimated new preds)
+                         lambda = (P[SEL_environment == "T"] + zT) * 0.66, # Estimated predator end counts in 0.66 mL (Start pred counts + estimated new preds)
                          log = T))
     
     
@@ -332,7 +332,7 @@ nll.odeint.full.model = function(Ndead, N0,
                          log = T))
     
     nll2ST = -1*sum(dpois(x = P.end[SEL_environment == "ST"],           # Measured predator end counts in 0.66 mL
-                          lambda = P[SEL_environment == "ST"] + zST * 0.66, # Estimated predator end counts in 0.66 mL (Start pred counts + estimated new preds)
+                          lambda = (P[SEL_environment == "ST"] + zST) * 0.66, # Estimated predator end counts in 0.66 mL (Start pred counts + estimated new preds)
                           log = T))
     
     # General nll value to minimize
@@ -359,59 +359,59 @@ nll.odeint.full.model = function(Ndead, N0,
     # Parameters for S, T and ST are all zero
     # We only need to remove the effect of temperature
     tempC = eaten.odeint.general.pred(N0 = N0[SEL_environment == "C"],        # Prey start dens
-                                            b = exp(bT.log + bC.log),
-                                            h = hT + hC,
-                                            r = rC,
-                                            K = exp(KC.log),
-                                            c = c,
-                                            m = mT + mC,
-                                            Tt = Tt[SEL_environment == "C"],        # Incubation time
-                                            P = P[SEL_environment == "C"],          # Predator start dens
-                                            steps = steps)  # Number of timesteps to simulate in Tt
+                                      b = exp(bT.log + bC.log),
+                                      h = hT + hC,
+                                      r = rC,
+                                      K = exp(KC.log),
+                                      c = c,
+                                      m = mT + mC,
+                                      Tt = Tt[SEL_environment == "C"],        # Incubation time
+                                      P = P[SEL_environment == "C"],          # Predator start dens
+                                      steps = steps)  # Number of timesteps to simulate in Tt
     
     ### Environment S
     # Get estimated prey consumed and predator growth given vital rates b, h, r, K, and c
     # Parameters for S, T and ST are all zero
     # We need to remove the effect of temperature, and add the effect of salinity, plus interaction
     tempS = eaten.odeint.general.pred(N0 = N0[SEL_environment == "S"],        # Prey start dens
-                                            b = exp(bT.log + bC.log + bS.log + bST.log),
-                                            h = hT + hC + hS + hST,
-                                            r = rS,              # independent r's for SEL environments
-                                            K = exp(KS.log),     # independent K's for SEL environments
-                                            c = c,
-                                            m = mT +mC + mS + mST,
-                                            Tt = Tt[SEL_environment == "S"],        # Incubation time
-                                            P = P[SEL_environment == "S"],          # Predator start dens
-                                            steps = steps)  # Number of timesteps to simulate in Tt
+                                      b = exp(bT.log + bC.log + bS.log + bST.log),
+                                      h = hT + hC + hS + hST,
+                                      r = rS,              # independent r's for SEL environments
+                                      K = exp(KS.log),     # independent K's for SEL environments
+                                      c = c,
+                                      m = mT +mC + mS + mST,
+                                      Tt = Tt[SEL_environment == "S"],        # Incubation time
+                                      P = P[SEL_environment == "S"],          # Predator start dens
+                                      steps = steps)  # Number of timesteps to simulate in Tt
     
     ### Environment T
     # Get estimated prey consumed and predator growth given vital rates b, h, r, K, and c
     # Parameters for S, T and ST are all zero
     tempT = eaten.odeint.general.pred(N0 = N0[SEL_environment == "T"],        # Prey start dens
-                                            b = exp(bT.log),
-                                            h = hT,
-                                            r = rT,              # independent r's for SEL environments
-                                            K = exp(KT.log),     # independent K's for SEL environments
-                                            c = c,
-                                            m = mT,
-                                            Tt = Tt[SEL_environment == "T"],        # Incubation time
-                                            P = P[SEL_environment == "T"],          # Predator start dens
-                                            steps = steps)  # Number of timesteps to simulate in Tt
+                                      b = exp(bT.log),
+                                      h = hT,
+                                      r = rT,              # independent r's for SEL environments
+                                      K = exp(KT.log),     # independent K's for SEL environments
+                                      c = c,
+                                      m = mT,
+                                      Tt = Tt[SEL_environment == "T"],        # Incubation time
+                                      P = P[SEL_environment == "T"],          # Predator start dens
+                                      steps = steps)  # Number of timesteps to simulate in Tt
     
     ### Environment ST
     # Get estimated prey consumed and predator growth given vital rates b, h, r, K, and c
     # Parameters for S, T and ST are all zero
     # We only need to add the effect of salinity
     tempST = eaten.odeint.general.pred(N0 = N0[SEL_environment == "ST"],        # Prey start dens
-                                             b = exp(bS.log + bT.log),
-                                             h = hS + hT,
-                                             r = rST,              # independent r's for SEL environments
-                                             K = exp(KST.log),     # independent K's for SEL environments
-                                             c = c,
-                                             m = mS + mT,
-                                             Tt = Tt[SEL_environment == "ST"],        # Incubation time
-                                             P = P[SEL_environment == "ST"],          # Predator start dens
-                                             steps = steps)  # Number of timesteps to simulate in Tt
+                                       b = exp(bS.log + bT.log),
+                                       h = hS + hT,
+                                       r = rST,              # independent r's for SEL environments
+                                       K = exp(KST.log),     # independent K's for SEL environments
+                                       c = c,
+                                       m = mS + mT,
+                                       Tt = Tt[SEL_environment == "ST"],        # Incubation time
+                                       P = P[SEL_environment == "ST"],          # Predator start dens
+                                       steps = steps)  # Number of timesteps to simulate in Tt
     
     # Compute nll for each environment and sum them for general nll
     
@@ -425,7 +425,7 @@ nll.odeint.full.model = function(Ndead, N0,
                         log = T))
     
     nll2C = -1*sum(dpois(x = P.end[SEL_environment == "C"],           # Measured predator end counts in 0.66 mL
-                         lambda = P[SEL_environment == "C"] + zC * 0.66, # Estimated predator end counts in 0.66 mL (Start pred counts + estimated new preds)
+                         lambda = (P[SEL_environment == "C"] + zC) * 0.66, # Estimated predator end counts in 0.66 mL (Start pred counts + estimated new preds)
                          log = T))
     
     ### Environment S
@@ -438,7 +438,7 @@ nll.odeint.full.model = function(Ndead, N0,
                         log = T))
     
     nll2S = -1*sum(dpois(x = P.end[SEL_environment == "S"],           # Measured predator end counts in 0.66 mL
-                         lambda = P[SEL_environment == "S"] + zS * 0.66, # Estimated predator end counts in 0.66 mL (Start pred counts + estimated new preds)
+                         lambda = (P[SEL_environment == "S"] + zS) * 0.66, # Estimated predator end counts in 0.66 mL (Start pred counts + estimated new preds)
                          log = T))
     
     ### Environment T
@@ -451,7 +451,7 @@ nll.odeint.full.model = function(Ndead, N0,
                         log = T))
     
     nll2T = -1*sum(dpois(x = P.end[SEL_environment == "T"],           # Measured predator end counts in 0.66 mL
-                         lambda = P[SEL_environment == "T"] + zT * 0.66, # Estimated predator end counts in 0.66 mL (Start pred counts + estimated new preds)
+                         lambda = (P[SEL_environment == "T"] + zT) * 0.66, # Estimated predator end counts in 0.66 mL (Start pred counts + estimated new preds)
                          log = T))
     
     
@@ -465,7 +465,7 @@ nll.odeint.full.model = function(Ndead, N0,
                          log = T))
     
     nll2ST = -1*sum(dpois(x = P.end[SEL_environment == "ST"],           # Measured predator end counts in 0.66 mL
-                          lambda = P[SEL_environment == "ST"] + zST * 0.66, # Estimated predator end counts in 0.66 mL (Start pred counts + estimated new preds)
+                          lambda = (P[SEL_environment == "ST"] + zST) * 0.66, # Estimated predator end counts in 0.66 mL (Start pred counts + estimated new preds)
                           log = T))
     
     # General nll value to minimize
@@ -555,7 +555,7 @@ nll.odeint.full.model = function(Ndead, N0,
                         log = T))
     
     nll2C = -1*sum(dpois(x = P.end[SEL_environment == "C"],           # Measured predator end counts in 0.66 mL
-                         lambda = P[SEL_environment == "C"] + zC * 0.66, # Estimated predator end counts in 0.66 mL (Start pred counts + estimated new preds)
+                         lambda = (P[SEL_environment == "C"] + zC) * 0.66, # Estimated predator end counts in 0.66 mL (Start pred counts + estimated new preds)
                          log = T))
     
     ### Environment S
@@ -568,7 +568,7 @@ nll.odeint.full.model = function(Ndead, N0,
                         log = T))
     
     nll2S = -1*sum(dpois(x = P.end[SEL_environment == "S"],           # Measured predator end counts in 0.66 mL
-                         lambda = P[SEL_environment == "S"] + zS * 0.66, # Estimated predator end counts in 0.66 mL (Start pred counts + estimated new preds)
+                         lambda = (P[SEL_environment == "S"] + zS) * 0.66, # Estimated predator end counts in 0.66 mL (Start pred counts + estimated new preds)
                          log = T))
     
     ### Environment T
@@ -581,7 +581,7 @@ nll.odeint.full.model = function(Ndead, N0,
                         log = T))
     
     nll2T = -1*sum(dpois(x = P.end[SEL_environment == "T"],           # Measured predator end counts in 0.66 mL
-                         lambda = P[SEL_environment == "T"] + zT * 0.66, # Estimated predator end counts in 0.66 mL (Start pred counts + estimated new preds)
+                         lambda = (P[SEL_environment == "T"] + zT) * 0.66, # Estimated predator end counts in 0.66 mL (Start pred counts + estimated new preds)
                          log = T))
     
     
@@ -595,7 +595,7 @@ nll.odeint.full.model = function(Ndead, N0,
                          log = T))
     
     nll2ST = -1*sum(dpois(x = P.end[SEL_environment == "ST"],           # Measured predator end counts in 0.66 mL
-                          lambda = P[SEL_environment == "ST"] + zST * 0.66, # Estimated predator end counts in 0.66 mL (Start pred counts + estimated new preds)
+                          lambda = (P[SEL_environment == "ST"] + zST) * 0.66, # Estimated predator end counts in 0.66 mL (Start pred counts + estimated new preds)
                           log = T))
     
     # General nll value to minimize
