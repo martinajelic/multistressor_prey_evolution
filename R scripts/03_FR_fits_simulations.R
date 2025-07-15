@@ -6,7 +6,7 @@
 # 
 #   Part 1: best model fits
 #     We use coefficient estimates from the best model fit obtained from the FR 
-#     search grid (script FR_search_grid.R) to get a FR curve for each FR 
+#     search grid (script 02_FR_search_grid.R) to get a FR curve for each FR 
 #     measured (one for each prey selection environment)
 # 
 #   Part 2: simulations of uncertainty around fits
@@ -286,12 +286,10 @@ N_T <- 1:max(FR_predictions$Prey_start_density[FR_predictions$SEL_environment ==
 N_ST <- 1:max(FR_predictions$Prey_start_density[FR_predictions$SEL_environment == "ST"])
 
 # -------------------- Getting FR fits for each realization --------------------
-
 # For each prey selection environment, we compute the number of prey eaten across 
-# prey densities and realized parameter combinations
-# 
-### Output will be a matrix where each column is the estimated FR curve for
-### one of the parameter combinations (1000 columns x N rows)
+# prey densities and realized parameter combinations.
+# Output will be a matrix where each column is the estimated FR curve for
+# one of the parameter combinations (1000 columns x N rows).
 predictions_C <- apply(param_sim, 1, function(p) {
   Ndead <- exp(p[["bC.log"]]) * N_C / (1 + exp(p[["bC.log"]]) * p[["hC"]] * N_C)
 })
@@ -376,19 +374,19 @@ response_upper_ST <- apply(predictions_ST, 1, quantile, probs = 0.975, na.rm = T
 FRC_CIs <- data.frame(lower = response_lower_C,
                       upper = response_upper_C,
                       Prey_start_density = N_C,
-                      SEL_environment = "C")
+                      SEL_environment = factor("C", levels = c("C", "S", "T", "ST")))
 FRS_CIs <- data.frame(lower = response_lower_S,
                       upper = response_upper_S,
                       Prey_start_density = N_S,
-                      SEL_environment = "S")
+                      SEL_environment = factor("S", levels = c("C", "S", "T", "ST")))
 FRT_CIs <- data.frame(lower = response_lower_T,
                       upper = response_upper_T,
                       Prey_start_density = N_T,
-                      SEL_environment = "T")
+                      SEL_environment = factor("T", levels = c("C", "S", "T", "ST")))
 FRST_CIs <- data.frame(lower = response_lower_ST,
                        upper = response_upper_ST,
                        Prey_start_density = N_ST,
-                       SEL_environment = "ST")
+                       SEL_environment = factor("ST", levels = c("C", "S", "T", "ST")))
 
 FRall_CIs <- rbind(FRC_CIs,
                    FRS_CIs,
@@ -402,7 +400,6 @@ FR_predictions <- merge(FR_predictions, FRall_CIs, by = c("SEL_environment", "Pr
          CI_upper = upper)
 
 save(FR_predictions, file = "Data/FR assay/04 - FR fits and simulations/Best_fit_curves_and_95%CIs.RData")
-
 
 
 

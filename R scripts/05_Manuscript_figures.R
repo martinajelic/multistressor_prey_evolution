@@ -1,10 +1,15 @@
 # ----------------------------------------------------------------------------------------------------------------------------------
-# Manuscript figures
+# Data analysis and results
 # ----------------------------------------------------------------------------------------------------------------------------------
-
-# --------------------------------------------------------------------------------------------------
-# Figure 1: FR parameters and fits
-# --------------------------------------------------------------------------------------------------
+# 
+# The following code yields the two manuscript figures:
+# 
+# - Figure 1: functional response parameters and fits
+# - Figure 2: prey growth rates and traits
+# 
+# See figure labels in the main text for detailed descriptions.
+# 
+# ----------------------------------------------------------------------------------------------------------------------------------
 
 rm(list = ls())
 
@@ -12,13 +17,22 @@ library(tidyverse)
 library(generics)
 library(broom)
 
-# ---------------------- Loading FR dataset ----------------------
+# --------------------------------------------------------------------------------------------------
+# Figure 1: FR parameters and fits
+# --------------------------------------------------------------------------------------------------
+
+# ---------------------- Loading relevant datasets ----------------------
+# Raw data
 load("Data/FR assay/01 - Raw data/Dataset_all.RData")
 
-
-# ---------------------- Loading best model fits ----------------------
+# Best FR fit
 load("Data/FR assay/03 - FR search grid/FR_ANOVA_like_best_fit.RData")
 
+# Predicted values from best model fit (created in 03_FR_fits_simulations.R)
+load("Data/FR assay/04 - FR fits and simulations/Best_fit_curves_and_95%CIs.RData")
+
+# ---------------------- Computing estimated parameters and uncertainty ----------------------
+# Getting the coefficients for each prey selection environment
 vcov_matrix <- vcov(best_FR_fit)
 
 FR_coefs <- generics::tidy(best_FR_fit)
@@ -46,17 +60,11 @@ FRT_coefs$std.error <- c(sqrt(sum(vcov_matrix[c("bC.log", "bT.log"), c("bC.log",
                          sqrt(sum(vcov_matrix[c("hC", "hT"), c("hC", "hT")])),
                          sqrt(sum(vcov_matrix[c("mC", "mT"), c("mC", "mT")])))
 
-# ---------------------- Loading predicted values from best model fits ----------------------
-# Dataset created in FR_fits_simulations.R
-load("Data/FR assay/04 - FR fits and simulations/Best_fit_curves_and_95%CIs.RData") # FR_predictions
-FR_predictions$SEL_environment <- factor(FR_predictions$SEL_environment,
-                                           levels = c("C", "S", "T", "ST"))
-
-# ---------------------- Estimated parameters and uncertainty ----------------------
-param_df <- rbind(FRC_coefs %>% dplyr::select(term, estimate, std.error) %>% mutate(SEL_environment = "C"),
-                  FRS_coefs %>% dplyr::select(term, estimate, std.error) %>% mutate(SEL_environment = "S"),
-                  FRT_coefs %>% dplyr::select(term, estimate, std.error) %>% mutate(SEL_environment = "T"),
-                  FRST_coefs %>% dplyr::select(term, estimate, std.error) %>% mutate(SEL_environment = "ST")) %>%
+# Creating datasets with parameter estimates and 95% CIs
+param_df <- rbind(FRC_coefs %>% dplyr::select(term, estimate, std.error) %>% mutate(SEL_environment = factor("C", levels = c("C", "S", "T", "ST"))),
+                  FRS_coefs %>% dplyr::select(term, estimate, std.error) %>% mutate(SEL_environment = factor("S", levels = c("C", "S", "T", "ST"))),
+                  FRT_coefs %>% dplyr::select(term, estimate, std.error) %>% mutate(SEL_environment = factor("T", levels = c("C", "S", "T", "ST"))),
+                  FRST_coefs %>% dplyr::select(term, estimate, std.error) %>% mutate(SEL_environment = factor("ST", levels = c("C", "S", "T", "ST")))) %>%
   dplyr::rename(Parameter = term,
                 Estimate = estimate,
                 StdError = std.error)
@@ -71,7 +79,7 @@ param_df$CI_upper <- param_df$Estimate + 1.96 * param_df$StdError
 param_df$StdUpper <- param_df$Estimate + param_df$StdError
 param_df$StdLower <- param_df$Estimate - param_df$StdError
 
-# Changing the b.log facet to exp(b.log)
+# Creating a new dataset with the b.log variable changed to exp(b.log) = b
 param_df_exp <- param_df
 
 # Exp the b.log values
@@ -80,7 +88,7 @@ param_df_exp$Estimate <- ifelse(param_df_exp$Parameter == "b.log", exp(param_df_
 # Change b.log label to b
 param_df_exp$Parameter <- ifelse(param_df_exp$Parameter == "b.log", "b", param_df_exp$Parameter)
 
-# Compute upper and lower values of Std. error bars
+# Compute upper and lower values of Std. error bars for exp(b.log) values
 param_df_exp$StdUpper <- ifelse(param_df_exp$Parameter == "b",
                                 exp(param_df_exp$StdUpper),
                                 param_df_exp$StdUpper)
@@ -88,17 +96,13 @@ param_df_exp$StdLower <- ifelse(param_df_exp$Parameter == "b",
                                 exp(param_df_exp$StdLower),
                                 param_df_exp$StdLower)
 
-# Compute upper and lower values of CIs
+# Compute upper and lower values of CIs for exp(b.log) values
 param_df_exp$CI_lower <- ifelse(param_df_exp$Parameter == "b",
                                 exp(param_df_exp$CI_lower),
                                 param_df_exp$CI_lower)
 param_df_exp$CI_upper <- ifelse(param_df_exp$Parameter == "b",
                                 exp(param_df_exp$CI_upper),
                                 param_df_exp$CI_upper)
-
-# Relevel SEL_environment
-param_df_exp$SEL_environment <- factor(param_df_exp$SEL_environment,
-                                       levels = c("C", "S", "T", "ST"))
 
 # ---------------------- Figure 1 ----------------------
 Pb <- ggplot(filter(param_df_exp, Parameter == "b"), aes(x = SEL_environment, y = Estimate, color = SEL_environment)) +
@@ -157,7 +161,7 @@ PFR_CS <- ggplot(filter(FR_predictions, Prey_start_density < 1000,
   theme(strip.background = element_blank(),
         legend.position = "bottom") +
   theme(plot.margin = margin(t = 10, r = 5, b = 0, l = 20, "pt")) +
-  ylim(0, 125)
+  ylim(0, 85)
 
 
 PFR_CT <- ggplot(filter(FR_predictions, Prey_start_density < 1000,
@@ -174,7 +178,7 @@ PFR_CT <- ggplot(filter(FR_predictions, Prey_start_density < 1000,
   theme(strip.background = element_blank(),
         legend.position = "bottom") +
   theme(plot.margin = margin(t = 10, r = 5, b = 0, l = 20, "pt")) +
-  ylim(0, 125)
+  ylim(0, 85)
 
 PFR_CST <- ggplot(filter(FR_predictions, Prey_start_density < 1000,
                          SEL_environment %in% c("C", "ST")), aes(x = Prey_start_density, y = Prey_consumed, color = SEL_environment, group = SEL_environment)) +
@@ -190,7 +194,7 @@ PFR_CST <- ggplot(filter(FR_predictions, Prey_start_density < 1000,
   theme(strip.background = element_blank(),
         legend.position = "bottom") +
   theme(plot.margin = margin(t = 10, r = 5, b = 0, l = 20, "pt")) +
-  ylim(0, 125)
+  ylim(0, 85)
 
 ggpubr::ggarrange(Pb, Ph, Pm, PFR_CS, PFR_CT, PFR_CST, ncol = 3, nrow = 2, labels = "auto", common.legend = T)
 # Save as pdf with figure dimensions 10 inches x 6 inches landscape mode
