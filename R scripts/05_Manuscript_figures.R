@@ -199,9 +199,6 @@ PFR_CST <- ggplot(filter(FR_predictions, Prey_start_density < 1000,
 ggpubr::ggarrange(Pb, Ph, Pm, PFR_CS, PFR_CT, PFR_CST, ncol = 3, nrow = 2, labels = "auto", common.legend = T)
 # Save as pdf with figure dimensions 10 inches x 6 inches landscape mode
 
-
-
-
 # --------------------------------------------------------------------------------------------------
 # Figure 2: prey traits and growth rate
 # --------------------------------------------------------------------------------------------------
