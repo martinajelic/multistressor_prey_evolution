@@ -11,56 +11,251 @@
 # 
 # ----------------------------------------------------------------------------------------------------------------------------------
 
+# --------------------------------------------------------------------------------------------------
+# Figure 2: prey traits and growth rate
+# --------------------------------------------------------------------------------------------------
+
 rm(list = ls())
 
 library(tidyverse)
 library(generics)
 library(broom)
 
+load("Data/Traits_assay.RData")
+load("Data/Marginal_means_estimates.RData")
+
+# Marginal means and sd for each trait at each selection x assay environment combination
+dd_GR <- as.data.frame(summary(emm_GR)) %>%
+  dplyr::select(Assay_environment, Selection_environment, emmean, SE)
+dd_size <- as.data.frame(summary(emm_size)) %>%
+  dplyr::select(Assay_environment, Selection_environment, emmean, SE)
+dd_speed <- as.data.frame(summary(emm_speed)) %>%
+  dplyr::select(Assay_environment, Selection_environment, emmean, SE)
+
+pos <- position_jitterdodge(jitter.width = 0.1, dodge.width = 0.75)
+
+P_GR <- ggplot() +
+  geom_point(data = traits_assay, aes(x = Assay_environment, y = GR,
+                                      color = Selection_environment, fill = Selection_environment, shape = Biorep),
+             alpha = 0.2, size = 1, position = pos) +
+  scale_shape_manual(values = 22:26) +
+  geom_errorbar(data = dd_GR, aes(x = Assay_environment, y = emmean, ymin = emmean - SE, ymax = emmean + SE,
+                                  color = Selection_environment),
+                linewidth = 0.5, position = pos, width = 0.4) +
+  geom_point(data = dd_GR, aes(x = Assay_environment, y = emmean,
+                               color = Selection_environment),
+             size = 1.5, position = pos) +
+  theme_bw() +
+  labs(x = "Assay environment",
+       y = latex2exp::TeX("Growth rate $ln(N_{t}/N_{0})/\\Delta t$"),
+       color = "Selection environment",
+       fill = "Selection environment",
+       shape = "Biological replicate") +
+  scale_color_manual(values = c("#000000", "#E69F00", "#56B4E9", "#009E73")) +
+  scale_fill_manual(values = c("#000000", "#E69F00", "#56B4E9", "#009E73")) +
+  theme(legend.position = "none") +
+  geom_hline(yintercept = 0, linetype = 2, color = "gray") +
+  theme(strip.background = element_blank())
+
+P_size <- ggplot() +
+  geom_point(data = traits_assay, aes(x = Assay_environment, y = Mean_cell_area,
+                                      color = Selection_environment, fill = Selection_environment, shape = Biorep),
+             alpha = 0.2, size = 1, position = pos) +
+  scale_shape_manual(values = 22:26) +
+  geom_errorbar(data = dd_size, aes(x = Assay_environment, y = emmean, ymin = emmean - SE, ymax = emmean + SE,
+                                    color = Selection_environment),
+                linewidth = 0.5, position = pos, width = 0.4) +
+  geom_point(data = dd_size, aes(x = Assay_environment, y = emmean,
+                                 color = Selection_environment),
+             size = 1.5, position = pos) +
+  theme_bw() +
+  labs(x = "Assay environment",
+       y = latex2exp::TeX("Cell area $(µm^2)$"),
+       color = "Selection environment",
+       fill = "Selection environment",
+       shape = "Biological replicate") +
+  scale_color_manual(values = c("#000000", "#E69F00", "#56B4E9", "#009E73")) +
+  scale_fill_manual(values = c("#000000", "#E69F00", "#56B4E9", "#009E73")) +
+  theme(legend.position = "none") +
+  theme(strip.background = element_blank())
+
+P_speed <- ggplot() +
+  geom_point(data = traits_assay, aes(x = Assay_environment, y = Mean_movement_speed,
+                                      color = Selection_environment, fill = Selection_environment, shape = Biorep),
+             alpha = 0.2, size = 1, position = pos) +
+  scale_shape_manual(values = 22:26) +
+  geom_errorbar(data = dd_speed, aes(x = Assay_environment, y = emmean, ymin = emmean - SE, ymax = emmean + SE,
+                                     color = Selection_environment),
+                linewidth = 0.5, position = pos, width = 0.4) +
+  geom_point(data = dd_speed, aes(x = Assay_environment, y = emmean,
+                                  color = Selection_environment),
+             size = 1.5, position = pos) +
+  theme_bw() +
+  labs(x = "Assay environment",
+       y = latex2exp::TeX("Movement speed ($µm$ $sec^{-1}$)"),
+       color = "Selection environment",
+       fill = "Selection environment",
+       shape = "Biological replicate") +
+  scale_color_manual(values = c("#000000", "#E69F00", "#56B4E9", "#009E73")) +
+  scale_fill_manual(values = c("#000000", "#E69F00", "#56B4E9", "#009E73")) +
+  theme(legend.position = "none") +
+  theme(strip.background = element_blank())
+
+ggpubr::ggarrange(P_GR, P_size, P_speed,
+                  ncol = 3, nrow = 1, common.legend = T, labels = "auto")
+# Save as pdf 3.25 x 10 inches landscape mode
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# library(patchwork)
+# library(cowplot)
+# 
+# # Extract the legends
+# legend_growth <- get_legend(
+#   p11 + theme(legend.position = "bottom",
+#               # legend.text = element_text(size = 12),
+#               legend.title = element_text(size = 14))
+# )
+# legend_diff <- get_legend(
+#   p13 + theme(legend.position = "bottom",
+#               # legend.text = element_text(size = 12),
+#               legend.title = element_text(size = 14))
+# )
+# legend_sign <- get_legend(
+#   p24 + theme(legend.position = "right",
+#               legend.text = element_text(size = 12))
+# )
+# 
+# 
+# 
+# # Arrange the grid
+# (top_row <- (P_GR | P_size | P_speed | get_legend(P_GR + theme(legend.position = "right",
+#                                                               legend.text = element_text(size = 12),
+#                                                               legend.title = element_text(size = 14)))) +
+#   plot_layout(ncol = 2, nrow = 2)  +
+#   plot_annotation(tag_levels = "a") & 
+#   theme(plot.tag = element_text(face = "bold", margin = margin(t = -20, r = 0, b = 0, l = 0))) &
+#   theme(plot.margin = margin(10, 10, 80, 10)) &  # top, right, bottom, left
+#   theme(axis.text = element_text(size = 12)))
+# 
+# (p_a <- plot_grid(P_GR, ncol = 1))
+# (p_b <- plot_grid(P_size, ncol = 1))
+# (p_c <- plot_grid(P_speed, ncol = 1))
+# (p_leg <- plot_grid(get_legend(P_GR + theme(legend.position = "right",
+#                                           legend.text = element_text(size = 22),
+#                                           legend.title = element_text(size = 24))), ncol = 1) & 
+#   theme(plot.tag = element_text(face = "bold", margin = margin(t = -20, r = 0, b = 0, l = 0))) &
+#   theme(plot.margin = margin(-60, -60, -80, -10)) &  # top, right, bottom, left
+#   theme(axis.text = element_text(size = 12)))
+# )
+# 
+# combined <- plot_grid(bottom, top, ncol = 1, rel_heights = c(0.18, 1)) +
+#   theme(plot.margin = margin(0, 20, 0, 40))  # top, right, bottom, left
+# 
+# 
+# # Top row
+# top <- plot_grid(top_row, ncol = 1)
+# 
+# # Bottom row: legend
+# bottom <- plot_grid(legend_growth, legend_diff, legend_sign,
+#                       ncol = 3, rel_widths = c(2, 1, 1)) +
+#   theme(plot.margin = margin(-30, 0, 0, 0))
+# 
+# # Combine the two
+# combined <- plot_grid(bottom, top, ncol = 1, rel_heights = c(0.18, 1)) +
+#   theme(plot.margin = margin(0, 20, 0, 40))  # top, right, bottom, left
+# 
+# ggdraw(combined) +
+#   draw_label("Temperature (°C)", 
+#              x = 0.5, y = 0.03, vjust = 0, size = 16) +
+#   draw_label("Salinity (g/L of NaCl)",
+#              x = 0.032, y = 0.5, angle = 90, vjust = 1, size = 16) +
+#   draw_label("Full model",
+#              x = 0.087, y = 0.88, vjust = 1, hjust = 0, size = 14) +
+#   draw_label("Ecological null model",
+#              x = 0.312, y = 0.88, vjust = 1, hjust = 0, size = 14) +
+#   draw_label("Difference",
+#              x = 0.539, y = 0.88, vjust = 1, hjust = 0, size = 14) +
+#   draw_label("Significant differences",
+#              x = 0.767, y = 0.88, vjust = 1, hjust = 0, size = 14) +
+#   draw_label("C", #fontface = "bold",
+#              x = 0.99, y = 0.772, vjust = 1, angle = 270, size = 16) +
+#   draw_label("S", #fontface = "bold",
+#              x = 0.99, y = 0.567, vjust = 1, angle = 270, size = 16) +
+#   draw_label("T", #fontface = "bold",
+#              x = 0.99, y = 0.36, vjust = 1, angle = 270, size = 16) +
+#   draw_label("ST", #fontface = "bold",
+#              x = 0.99, y = 0.156, vjust = 1, angle = 270, size = 16)
+# # Save 10 x 12 inches, portrait mode
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # --------------------------------------------------------------------------------------------------
-# Figure 1: FR parameters and fits
+# Figure 3: FR parameters and fits
 # --------------------------------------------------------------------------------------------------
+
+rm(list = ls())
+
+library(tidyverse)
+library(generics)
+library(broom)
 
 # ---------------------- Loading relevant datasets ----------------------
 # Raw data
 load("Data/FR assay/01 - Raw data/Dataset_all.RData")
 
-# Best FR fit
-load("Data/FR assay/03 - FR search grid/FR_ANOVA_like_best_fit.RData")
-
-# Predicted values from best model fit (created in 03_FR_fits_simulations.R)
+# Model predictions from best model fit (created in 03_FR_fits_simulations.R)
 load("Data/FR assay/04 - FR fits and simulations/Best_fit_curves_and_95%CIs.RData")
 
+# Predicted values from best model fit (created in 04_Data_analysis_and_results.R)
+load("Data/FR assay/04 - FR fits and simulations/Best_fit_estimates_per_environment.RData")
+
 # ---------------------- Computing estimated parameters and uncertainty ----------------------
-# Getting the coefficients for each prey selection environment
-vcov_matrix <- bbmle::vcov(best_FR_fit)
-
-FR_coefs <- generics::tidy(best_FR_fit)
-
-FRC_coefs <- FR_coefs[grep("C", FR_coefs$term),]
-FRS_coefs <- FR_coefs[grep("C", FR_coefs$term) + 1,]
-FRT_coefs <- FR_coefs[grep("C", FR_coefs$term) + 2,]
-FRST_coefs <- FR_coefs[grep("ST", FR_coefs$term),]
-
-# Computing the sums for each parameter in each environment
-FRST_coefs$estimate <- FRST_coefs$estimate + FRS_coefs$estimate + FRT_coefs$estimate + FRC_coefs$estimate
-FRST_coefs$std.error <- c(sqrt(sum(vcov_matrix[c("bC.log", "bS.log", "bT.log", "bST.log"), c("bC.log", "bS.log", "bT.log", "bST.log")])),
-                          sqrt(sum(vcov_matrix[c("hC", "hS", "hT", "hST"), c("hC", "hS", "hT", "hST")])),
-                          sqrt(sum(vcov_matrix[c("mC", "mS", "mT", "mST"), c("mC", "mS", "mT", "mST")])))
-
-
-FRS_coefs$estimate <- FRS_coefs$estimate + FRC_coefs$estimate
-FRS_coefs$std.error <- c(sqrt(sum(vcov_matrix[c("bC.log", "bS.log"), c("bC.log", "bS.log")])),
-                         sqrt(sum(vcov_matrix[c("hC", "hS"), c("hC", "hS")])),
-                         sqrt(sum(vcov_matrix[c("mC", "mS"), c("mC", "mS")])))
-
-
-FRT_coefs$estimate <- FRT_coefs$estimate + FRC_coefs$estimate
-FRT_coefs$std.error <- c(sqrt(sum(vcov_matrix[c("bC.log", "bT.log"), c("bC.log", "bT.log")])),
-                         sqrt(sum(vcov_matrix[c("hC", "hT"), c("hC", "hT")])),
-                         sqrt(sum(vcov_matrix[c("mC", "mT"), c("mC", "mT")])))
-
-# Creating datasets with parameter estimates and 95% CIs
+# Creating datasets with parameter estimates and 95% CIs for plotting
 param_df <- rbind(FRC_coefs %>% dplyr::select(term, estimate, std.error) %>% mutate(SEL_environment = factor("C", levels = c("C", "S", "T", "ST"))),
                   FRS_coefs %>% dplyr::select(term, estimate, std.error) %>% mutate(SEL_environment = factor("S", levels = c("C", "S", "T", "ST"))),
                   FRT_coefs %>% dplyr::select(term, estimate, std.error) %>% mutate(SEL_environment = factor("T", levels = c("C", "S", "T", "ST"))),
@@ -199,8 +394,13 @@ PFR_CST <- ggplot(filter(FR_predictions, Prey_start_density < 1000,
 ggpubr::ggarrange(Pb, Ph, Pm, PFR_CS, PFR_CT, PFR_CST, ncol = 3, nrow = 2, labels = "auto", common.legend = T)
 # Save as pdf with figure dimensions 10 inches x 6 inches landscape mode
 
+
+
+
+
+
 # --------------------------------------------------------------------------------------------------
-# Figure 2: prey traits and growth rate
+# Figure 4: FR parameters and prey traits
 # --------------------------------------------------------------------------------------------------
 
 rm(list = ls())
@@ -209,166 +409,10 @@ library(tidyverse)
 library(generics)
 library(broom)
 
-load("Data/Traits_assay.RData")
+# ---------------------- Loading relevant datasets ----------------------
+# Regressions of FR parameters and prey traits, and corresponding dataset
+load("Data/FR_params_and_prey_traits_regressions.RData")
 
-P_GR <- ggplot() +
-  geom_boxplot(data = traits_assay, aes(x = Assay_environment, y = GR,
-                                                    color = Selection_environment, fill = Selection_environment),
-               alpha = 0.3, linewidth = 0.2) +
-  geom_point(data = traits_assay, aes(x = Assay_environment, y = GR,
-                                                  color = Selection_environment, fill = Selection_environment, shape = Biorep),
-             alpha = 1, size = 1, position = position_jitterdodge(jitter.width = 0.1, dodge.width = 0.75)) +
-  theme_bw() +
-  labs(x = "Assay environment",
-       y = latex2exp::TeX("Growth rate $ln(N_{t}/N_{0})/\\Delta t$"),
-       color = "Selection environment",
-       fill = "Selection environment",
-       shape = "Replicate") +
-  scale_color_manual(values = c("#000000", "#E69F00", "#56B4E9", "#009E73")) +
-  scale_fill_manual(values = c("#000000", "#E69F00", "#56B4E9", "#009E73")) +
-  theme(legend.position = "none") +
-  geom_hline(yintercept = 0, linetype = 2, color = "gray") +
-  theme(strip.background = element_blank())
-
-P_size <- ggplot() +
-  geom_boxplot(data = traits_assay, aes(x = Assay_environment, y = Mean_cell_area,
-                                                    color = Selection_environment, fill = Selection_environment),
-               alpha = 0.3, linewidth = 0.2) +
-  geom_point(data = traits_assay, aes(x = Assay_environment, y = Mean_cell_area,
-                                                  color = Selection_environment, fill = Selection_environment, shape = Biorep),
-             alpha = 1, size = 1, position = position_jitterdodge(jitter.width = 0.1, dodge.width = 0.75)) +
-  theme_bw() +
-  labs(x = "Assay environment",
-       y = latex2exp::TeX("Cell area $(µm^2)$"),
-       color = "Selection environment",
-       fill = "Selection environment",
-       shape = "Replicate") +
-  scale_color_manual(values = c("#000000", "#E69F00", "#56B4E9", "#009E73")) +
-  scale_fill_manual(values = c("#000000", "#E69F00", "#56B4E9", "#009E73")) +
-  theme(legend.position = "none") +
-  theme(strip.background = element_blank())
-
-P_speed <- ggplot() +
-  geom_boxplot(data = traits_assay, aes(x = Assay_environment, y = Mean_movement_speed,
-                                                    color = Selection_environment, fill = Selection_environment),
-               alpha = 0.3, linewidth = 0.2) +
-  geom_point(data = traits_assay, aes(x = Assay_environment, y = Mean_movement_speed,
-                                                  color = Selection_environment, fill = Selection_environment, shape = Biorep),
-             alpha = 1, size = 1, position = position_jitterdodge(jitter.width = 0.1, dodge.width = 0.75)) +
-  theme_bw() +
-  labs(x = "Assay environment",
-       y = latex2exp::TeX("Movement speed ($µm$ $sec^{-1}$)"),
-       color = "Selection environment",
-       fill = "Selection environment",
-       shape = "Replicate") +
-  scale_color_manual(values = c("#000000", "#E69F00", "#56B4E9", "#009E73")) +
-  scale_fill_manual(values = c("#000000", "#E69F00", "#56B4E9", "#009E73")) +
-  theme(legend.position = "none") +
-  theme(strip.background = element_blank())
-
-ggpubr::ggarrange(P_GR, P_size, P_speed,
-                  ncol = 3, nrow = 1, common.legend = T, labels = "auto")
-# Save as pdf 3.25 x 10 inches landscape mode
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Extract the legends
-legend_growth <- get_legend(
-  p11 + theme(legend.position = "bottom",
-              # legend.text = element_text(size = 12),
-              legend.title = element_text(size = 14))
-)
-legend_diff <- get_legend(
-  p13 + theme(legend.position = "bottom",
-              # legend.text = element_text(size = 12),
-              legend.title = element_text(size = 14))
-)
-legend_sign <- get_legend(
-  p24 + theme(legend.position = "right",
-              legend.text = element_text(size = 12))
-)
-
-
-library(patchwork)
-library(cowplot)
-
-# Arrange the grid
-(top_row <- (P_GR | P_size | P_speed | get_legend(P_GR + theme(legend.position = "right",
-                                                              legend.text = element_text(size = 12),
-                                                              legend.title = element_text(size = 14)))) +
-  plot_layout(ncol = 2, nrow = 2)  +
-  plot_annotation(tag_levels = "a") & 
-  theme(plot.tag = element_text(face = "bold", margin = margin(t = -20, r = 0, b = 0, l = 0))) &
-  theme(plot.margin = margin(10, 10, 80, 10)) &  # top, right, bottom, left
-  theme(axis.text = element_text(size = 12)))
-
-(p_a <- plot_grid(P_GR, ncol = 1))
-(p_b <- plot_grid(P_size, ncol = 1))
-(p_c <- plot_grid(P_speed, ncol = 1))
-(p_leg <- plot_grid(get_legend(P_GR + theme(legend.position = "right",
-                                          legend.text = element_text(size = 22),
-                                          legend.title = element_text(size = 24))), ncol = 1) & 
-  theme(plot.tag = element_text(face = "bold", margin = margin(t = -20, r = 0, b = 0, l = 0))) &
-  theme(plot.margin = margin(-60, -60, -80, -10)) &  # top, right, bottom, left
-  theme(axis.text = element_text(size = 12)))
-)
-
-combined <- plot_grid(bottom, top, ncol = 1, rel_heights = c(0.18, 1)) +
-  theme(plot.margin = margin(0, 20, 0, 40))  # top, right, bottom, left
-
-
-# Top row
-top <- plot_grid(top_row, ncol = 1)
-
-# Bottom row: legend
-bottom <- plot_grid(legend_growth, legend_diff, legend_sign,
-                      ncol = 3, rel_widths = c(2, 1, 1)) +
-  theme(plot.margin = margin(-30, 0, 0, 0))
-
-# Combine the two
-combined <- plot_grid(bottom, top, ncol = 1, rel_heights = c(0.18, 1)) +
-  theme(plot.margin = margin(0, 20, 0, 40))  # top, right, bottom, left
-
-ggdraw(combined) +
-  draw_label("Temperature (°C)", 
-             x = 0.5, y = 0.03, vjust = 0, size = 16) +
-  draw_label("Salinity (g/L of NaCl)",
-             x = 0.032, y = 0.5, angle = 90, vjust = 1, size = 16) +
-  draw_label("Full model",
-             x = 0.087, y = 0.88, vjust = 1, hjust = 0, size = 14) +
-  draw_label("Ecological null model",
-             x = 0.312, y = 0.88, vjust = 1, hjust = 0, size = 14) +
-  draw_label("Difference",
-             x = 0.539, y = 0.88, vjust = 1, hjust = 0, size = 14) +
-  draw_label("Significant differences",
-             x = 0.767, y = 0.88, vjust = 1, hjust = 0, size = 14) +
-  draw_label("C", #fontface = "bold",
-             x = 0.99, y = 0.772, vjust = 1, angle = 270, size = 16) +
-  draw_label("S", #fontface = "bold",
-             x = 0.99, y = 0.567, vjust = 1, angle = 270, size = 16) +
-  draw_label("T", #fontface = "bold",
-             x = 0.99, y = 0.36, vjust = 1, angle = 270, size = 16) +
-  draw_label("ST", #fontface = "bold",
-             x = 0.99, y = 0.156, vjust = 1, angle = 270, size = 16)
-# Save 10 x 12 inches, portrait mode
-
+ggplot(FR_traits_comparison, aes(x = Mean_movement_speed, y = b.log)) +
+  geom_point() +
+  geom_abline(a = 0, b = 1)
