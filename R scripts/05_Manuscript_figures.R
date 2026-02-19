@@ -413,6 +413,114 @@ library(broom)
 # Regressions of FR parameters and prey traits, and corresponding dataset
 load("Data/FR_params_and_prey_traits_regressions.RData")
 
-ggplot(FR_traits_comparison, aes(x = Mean_movement_speed, y = b.log)) +
-  geom_point() +
-  geom_abline(a = 0, b = 1)
+newdat <- data.frame(
+  Mean_movement_speed = seq(min(FR_traits_comparison$Mean_movement_speed),
+                            max(FR_traits_comparison$Mean_movement_speed),
+                            length.out = 200),
+  Mean_cell_area = seq(min(FR_traits_comparison$Mean_cell_area),
+                       max(FR_traits_comparison$Mean_cell_area),
+                       length.out = 200)
+)
+
+Pred_blog_speed <- cbind(newdat, predict(blog_speed_mod, newdat, interval = "confidence", level = 0.95))
+Pred_blog_size <- cbind(newdat, predict(blog_size_mod, newdat, interval = "confidence", level = 0.95))
+Pred_h_size <- cbind(newdat, predict(h_size_mod, newdat, interval = "confidence", level = 0.95))
+
+(plot_b_speed <- ggplot() +
+    geom_point(data = FR_traits_comparison, aes(x = Mean_movement_speed, y = b.log, shape = Biorep, color = Selection_environment)) +
+    scale_color_manual(values = c("#716868", "#E69F00", "#56B4E9", "#009E73")) +
+    scale_shape_manual(values = 22:26) +
+    geom_line(data = Pred_blog_speed, aes(x = Mean_movement_speed, y = fit)) +
+    geom_ribbon(data = Pred_blog_speed,
+              aes(x = Mean_movement_speed, y = fit, ymin = lwr, ymax = upr),
+              alpha = 0.2) +
+    theme_bw() +
+    labs(x = latex2exp::TeX("Movement speed ($µm$ $sec^{-1}$)"),
+       y = latex2exp::TeX("$ln(b)$")) +
+    theme(legend.position = "none"))
+
+(plot_b_size <- ggplot() +
+  geom_point(data = FR_traits_comparison, aes(x = Mean_cell_area, y = b.log, shape = Biorep, color = Selection_environment)) +
+  scale_color_manual(values = c("#716868", "#E69F00", "#56B4E9", "#009E73")) +
+  scale_shape_manual(values = 22:26) +
+  geom_line(data = Pred_blog_size, aes(x = Mean_cell_area, y = fit)) +
+  geom_ribbon(data = Pred_blog_size,
+              aes(x = Mean_cell_area, y = fit, ymin = lwr, ymax = upr),
+              alpha = 0.2) +
+  theme_bw() +
+  labs(x = latex2exp::TeX("Cell area $(µm^2)$"),
+       y = latex2exp::TeX("$ln(b)$")) +
+    theme(legend.position = "none"))
+
+(plot_h_size <- ggplot() +
+  geom_point(data = FR_traits_comparison, aes(x = Mean_cell_area, y = h, shape = Biorep, color = Selection_environment)) +
+  scale_color_manual(values = c("#716868", "#E69F00", "#56B4E9", "#009E73")) +
+  scale_shape_manual(values = 22:26) +
+  geom_line(data = Pred_h_size, aes(x = Mean_cell_area, y = fit)) +
+  geom_ribbon(data = Pred_h_size,
+              aes(x = Mean_cell_area, y = fit, ymin = lwr, ymax = upr),
+              alpha = 0.2) +
+  theme_bw() +
+  labs(x = latex2exp::TeX("Cell area $(µm^2)$"),
+       y = latex2exp::TeX("$h$")) +
+    theme(legend.position = "none"))
+
+
+library(patchwork)
+library(cowplot)
+
+# Extract the legends
+legend_FR_traits <- get_legend(
+  plot_b_speed + theme(legend.position = "bottom",
+              # legend.text = element_text(size = 12),
+              legend.title = element_text(size = 14))
+)
+
+
+
+# Arrange the grid
+(top_row <- (plot_b_speed | plot_b_size | plot_h_size) +
+  plot_layout(ncol = 3, nrow = 1)  +
+  plot_annotation(tag_levels = "a") &
+  theme(plot.tag = element_text(face = "bold", margin = margin(t = -20, r = 0, b = 0, l = 0))) &
+  theme(plot.margin = margin(10, 10, 10, 10)) &  # top, right, bottom, left
+  theme(axis.text = element_text(size = 12)))
+
+
+# Top row
+top <- plot_grid(top_row, ncol = 1)
+
+# Bottom row: legend
+bottom <- plot_grid(legend_FR_traits,
+                      ncol = 1) +
+  theme(plot.margin = margin(-30, 0, 0, 0))
+
+# Combine the two
+(combined <- plot_grid(top, bottom, ncol = 1, rel_heights = c(1, 0.18)) +
+  theme(plot.margin = margin(0, 20, 0, 40)))  # top, right, bottom, left
+
+ggdraw(combined) +
+  draw_label("Temperature (°C)",
+             x = 0.5, y = 0.03, vjust = 0, size = 16) +
+  draw_label("Salinity (g/L of NaCl)",
+             x = 0.032, y = 0.5, angle = 90, vjust = 1, size = 16) +
+  draw_label("Full model",
+             x = 0.087, y = 0.88, vjust = 1, hjust = 0, size = 14) +
+  draw_label("Ecological null model",
+             x = 0.312, y = 0.88, vjust = 1, hjust = 0, size = 14) +
+  draw_label("Difference",
+             x = 0.539, y = 0.88, vjust = 1, hjust = 0, size = 14) +
+  draw_label("Significant differences",
+             x = 0.767, y = 0.88, vjust = 1, hjust = 0, size = 14) +
+  draw_label("C", #fontface = "bold",
+             x = 0.99, y = 0.772, vjust = 1, angle = 270, size = 16) +
+  draw_label("S", #fontface = "bold",
+             x = 0.99, y = 0.567, vjust = 1, angle = 270, size = 16) +
+  draw_label("T", #fontface = "bold",
+             x = 0.99, y = 0.36, vjust = 1, angle = 270, size = 16) +
+  draw_label("ST", #fontface = "bold",
+             x = 0.99, y = 0.156, vjust = 1, angle = 270, size = 16)
+# Save 10 x 12 inches, portrait mode
+
+
+

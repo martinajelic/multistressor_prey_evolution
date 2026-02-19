@@ -17,6 +17,8 @@
 # 
 # ----------------------------------------------------------------------------------------------------------------------------------
 
+rm(list = ls())
+
 # Libraries
 library(tidyverse)
 library(lmerTest)
@@ -276,7 +278,7 @@ blog_speed_mod_reduced <- lm(b.log ~ Mean_movement_speed,
                              FR_trait_means_comparison)
 summary(blog_speed_mod_reduced)
 
-# --------------- Movement speed and handling time
+# --------------- Cell size and space clearance rate
 blog_size_mod <- lm(b.log ~ Mean_cell_area,
                     FR_traits_comparison)
 summary(blog_size_mod)
