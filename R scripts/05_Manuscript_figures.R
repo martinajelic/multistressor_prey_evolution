@@ -20,6 +20,8 @@ rm(list = ls())
 library(tidyverse)
 library(generics)
 library(broom)
+library(patchwork)
+library(cowplot)
 
 load("Data/Traits_assay.RData")
 load("Data/Marginal_means_estimates.RData")
@@ -45,7 +47,7 @@ P_GR <- ggplot() +
   geom_point(data = dd_GR, aes(x = Assay_environment, y = emmean,
                                color = Selection_environment),
              size = 1.5, position = pos) +
-  theme_bw() +
+  theme_light() +
   labs(x = "Assay environment",
        y = latex2exp::TeX("Growth rate $ln(N_{t}/N_{0})/\\Delta t$"),
        color = "Selection environment",
@@ -68,7 +70,7 @@ P_size <- ggplot() +
   geom_point(data = dd_size, aes(x = Assay_environment, y = emmean,
                                  color = Selection_environment),
              size = 1.5, position = pos) +
-  theme_bw() +
+  theme_light() +
   labs(x = "Assay environment",
        y = latex2exp::TeX("Cell area $(µm^2)$"),
        color = "Selection environment",
@@ -90,7 +92,7 @@ P_speed <- ggplot() +
   geom_point(data = dd_speed, aes(x = Assay_environment, y = emmean,
                                   color = Selection_environment),
              size = 1.5, position = pos) +
-  theme_bw() +
+  theme_light() +
   labs(x = "Assay environment",
        y = latex2exp::TeX("Movement speed ($µm$ $sec^{-1}$)"),
        color = "Selection environment",
@@ -103,6 +105,8 @@ P_speed <- ggplot() +
 
 ggpubr::ggarrange(P_GR, P_size, P_speed,
                   ncol = 3, nrow = 1, common.legend = T, labels = "auto")
+ggsave(filename = "Figure_2.pdf",
+       width = 10, height = 3.25)
 # Save as pdf 3.25 x 10 inches landscape mode
 
 
@@ -304,7 +308,7 @@ Pb <- ggplot(filter(param_df_exp, Parameter == "b"), aes(x = SEL_environment, y 
   geom_point(size = 3, position = position_dodge(width = 0.7)) +
   geom_errorbar(aes(ymin = CI_lower, ymax = CI_upper), width = 0.2, size = 0.7,
                 position = position_dodge(width = 0.7)) +
-  theme_bw() +
+  theme_light() +
   scale_color_manual(values = c("#716868", "#E69F00", "#56B4E9", "#009E73")) +
   labs(x = "Prey selection environment",
        y = latex2exp::TeX("Space clearance rate $\\textit{b}$ (mL $day^{-1}$)"),
@@ -318,7 +322,7 @@ Ph <- ggplot(filter(param_df_exp, Parameter == "h"), aes(x = SEL_environment, y 
   geom_point(size = 3, position = position_dodge(width = 0.7)) +
   geom_errorbar(aes(ymin = CI_lower, ymax = CI_upper), width = 0.2, size = 0.7,
                 position = position_dodge(width = 0.7)) +
-  theme_bw() +
+  theme_light() +
   scale_color_manual(values = c("#716868", "#E69F00", "#56B4E9", "#009E73")) +
   labs(x = "Prey selection environment",
        y = latex2exp::TeX("Handling time $\\textit{h}$ $(day)$"),
@@ -332,7 +336,7 @@ Pm <- ggplot(filter(param_df_exp, Parameter == "m"), aes(x = SEL_environment, y 
   geom_point(size = 3, position = position_dodge(width = 0.7)) +
   geom_errorbar(aes(ymin = CI_lower, ymax = CI_upper), width = 0.3, size = 0.7,
                 position = position_dodge(width = 0.7)) +
-  theme_bw() +
+  theme_light() +
   scale_color_manual(values = c("#716868", "#E69F00", "#56B4E9", "#009E73")) +
   labs(x = "Prey selection environment",
        y = latex2exp::TeX("Predator mortality $\\textit{m}$ $(day^{-1})$"),
@@ -346,7 +350,7 @@ PFR_CS <- ggplot(filter(FR_predictions, Prey_start_density < 1000,
                         SEL_environment %in% c("C", "S")), aes(x = Prey_start_density, y = Prey_consumed, color = SEL_environment, group = SEL_environment)) +
   geom_line(size = 1.1) +
   geom_ribbon(aes(x = Prey_start_density, y = Prey_consumed, ymin = CI_lower, ymax = CI_upper, fill = SEL_environment, color = NULL), alpha = 0.15) +
-  theme_bw() +
+  theme_light() +
   scale_color_manual(values = c("#716868", "#E69F00")) +
   scale_fill_manual(values = c("#716868", "#E69F00")) +
   labs(x = latex2exp::TeX("Prey start density ($mL^{-1}$)"),
@@ -363,7 +367,7 @@ PFR_CT <- ggplot(filter(FR_predictions, Prey_start_density < 1000,
                         SEL_environment %in% c("C", "T")), aes(x = Prey_start_density, y = Prey_consumed, color = SEL_environment, group = SEL_environment)) +
   geom_line(size = 1.1) +
   geom_ribbon(aes(x = Prey_start_density, y = Prey_consumed, ymin = CI_lower, ymax = CI_upper, fill = SEL_environment, color = NULL), alpha = 0.15) +
-  theme_bw() +
+  theme_light() +
   scale_color_manual(values = c("#716868", "#56B4E9")) +
   scale_fill_manual(values = c("#716868", "#56B4E9")) +
   labs(x = latex2exp::TeX("Prey start density ($mL^{-1}$)"),
@@ -379,7 +383,7 @@ PFR_CST <- ggplot(filter(FR_predictions, Prey_start_density < 1000,
                          SEL_environment %in% c("C", "ST")), aes(x = Prey_start_density, y = Prey_consumed, color = SEL_environment, group = SEL_environment)) +
   geom_line(size = 1.1) +
   geom_ribbon(aes(x = Prey_start_density, y = Prey_consumed, ymin = CI_lower, ymax = CI_upper, fill = SEL_environment, color = NULL), alpha = 0.15) +
-  theme_bw() +
+  theme_light() +
   scale_color_manual(values = c("#716868", "#009E73")) +
   scale_fill_manual(values = c("#716868", "#009E73")) +
   labs(x = latex2exp::TeX("Prey start density ($mL^{-1}$)"),
@@ -393,7 +397,8 @@ PFR_CST <- ggplot(filter(FR_predictions, Prey_start_density < 1000,
 
 ggpubr::ggarrange(Pb, Ph, Pm, PFR_CS, PFR_CT, PFR_CST, ncol = 3, nrow = 2, labels = "auto", common.legend = T)
 # Save as pdf with figure dimensions 10 inches x 6 inches landscape mode
-
+ggsave(filename = "Figure_3.pdf",
+       width = 10, height = 6)
 
 
 
@@ -426,101 +431,89 @@ Pred_blog_speed <- cbind(newdat, predict(blog_speed_mod, newdat, interval = "con
 Pred_blog_size <- cbind(newdat, predict(blog_size_mod, newdat, interval = "confidence", level = 0.95))
 Pred_h_size <- cbind(newdat, predict(h_size_mod, newdat, interval = "confidence", level = 0.95))
 
-(plot_b_speed <- ggplot() +
-    geom_point(data = FR_traits_comparison, aes(x = Mean_movement_speed, y = b.log, shape = Biorep, color = Selection_environment)) +
+# One plot for each regression
+plot_b_speed <- ggplot() +
+    geom_point(data = FR_traits_comparison, aes(x = Mean_movement_speed, y = b.log, color = Selection_environment)) +
     scale_color_manual(values = c("#716868", "#E69F00", "#56B4E9", "#009E73")) +
-    scale_shape_manual(values = 22:26) +
+    # scale_shape_manual(values = 22:26) +
     geom_line(data = Pred_blog_speed, aes(x = Mean_movement_speed, y = fit)) +
     geom_ribbon(data = Pred_blog_speed,
               aes(x = Mean_movement_speed, y = fit, ymin = lwr, ymax = upr),
-              alpha = 0.2) +
-    theme_bw() +
+              alpha = 0.1) +
+  theme_light() +
     labs(x = latex2exp::TeX("Movement speed ($µm$ $sec^{-1}$)"),
-       y = latex2exp::TeX("$ln(b)$")) +
-    theme(legend.position = "none"))
+       y = latex2exp::TeX("$ln(b)$"),
+       color = "Selection environment",
+       shape = "Biological replicate") +
+    theme(legend.position = "none") +
+  ylim(-1.8, 0.15)
 
 (plot_b_size <- ggplot() +
-  geom_point(data = FR_traits_comparison, aes(x = Mean_cell_area, y = b.log, shape = Biorep, color = Selection_environment)) +
+  geom_point(data = FR_traits_comparison, aes(x = Mean_cell_area, y = b.log, color = Selection_environment)) +
   scale_color_manual(values = c("#716868", "#E69F00", "#56B4E9", "#009E73")) +
-  scale_shape_manual(values = 22:26) +
+  # scale_shape_manual(values = 22:26) +
   geom_line(data = Pred_blog_size, aes(x = Mean_cell_area, y = fit)) +
   geom_ribbon(data = Pred_blog_size,
               aes(x = Mean_cell_area, y = fit, ymin = lwr, ymax = upr),
-              alpha = 0.2) +
-  theme_bw() +
+              alpha = 0.1) +
+  theme_light() +
   labs(x = latex2exp::TeX("Cell area $(µm^2)$"),
-       y = latex2exp::TeX("$ln(b)$")) +
-    theme(legend.position = "none"))
+       y = latex2exp::TeX("$ln(b)$"),
+       color = "Selection environment",
+       shape = "Biological replicate") +
+    theme(legend.position = "none") +
+  ylim(-1.8, 0.15))
 
-(plot_h_size <- ggplot() +
-  geom_point(data = FR_traits_comparison, aes(x = Mean_cell_area, y = h, shape = Biorep, color = Selection_environment)) +
+plot_h_size <- ggplot() +
+  geom_point(data = FR_traits_comparison, aes(x = Mean_cell_area, y = h, color = Selection_environment)) +
   scale_color_manual(values = c("#716868", "#E69F00", "#56B4E9", "#009E73")) +
-  scale_shape_manual(values = 22:26) +
+  # scale_shape_manual(values = 22:26) +
   geom_line(data = Pred_h_size, aes(x = Mean_cell_area, y = fit)) +
   geom_ribbon(data = Pred_h_size,
               aes(x = Mean_cell_area, y = fit, ymin = lwr, ymax = upr),
-              alpha = 0.2) +
-  theme_bw() +
+              alpha = 0.1) +
+  theme_light() +
   labs(x = latex2exp::TeX("Cell area $(µm^2)$"),
-       y = latex2exp::TeX("$h$")) +
-    theme(legend.position = "none"))
+       y = latex2exp::TeX("$h$"),
+       color = "Selection environment",
+       shape = "Biological replicate") +
+    theme(legend.position = "none")
 
-
-library(patchwork)
-library(cowplot)
-
-# Extract the legends
-legend_FR_traits <- get_legend(
-  plot_b_speed + theme(legend.position = "bottom",
-              # legend.text = element_text(size = 12),
-              legend.title = element_text(size = 14))
-)
-
-
-
-# Arrange the grid
-(top_row <- (plot_b_speed | plot_b_size | plot_h_size) +
+# Top row with plots
+top_row <- (plot_b_speed | plot_b_size | plot_h_size) +
   plot_layout(ncol = 3, nrow = 1)  +
   plot_annotation(tag_levels = "a") &
   theme(plot.tag = element_text(face = "bold", margin = margin(t = -20, r = 0, b = 0, l = 0))) &
-  theme(plot.margin = margin(10, 10, 10, 10)) &  # top, right, bottom, left
-  theme(axis.text = element_text(size = 12)))
+  theme(plot.margin = margin(10, 0, 10, 10)) &  # top, right, bottom, left
+  theme(axis.text = element_text(size = 12))
 
-
-# Top row
 top <- plot_grid(top_row, ncol = 1)
 
-# Bottom row: legend
+# Bottom row with legends
+legend_FR_traits <- get_legend(
+  plot_b_speed + theme(legend.position = "bottom",
+                       # legend.text = element_text(size = 12),
+                       legend.title = element_text(hjust = 0.5),
+                       legend.title.position = "top")
+)
+
 bottom <- plot_grid(legend_FR_traits,
                       ncol = 1) +
-  theme(plot.margin = margin(-30, 0, 0, 0))
+  theme(plot.margin = margin(0, 0, 0, 0))
 
-# Combine the two
-(combined <- plot_grid(top, bottom, ncol = 1, rel_heights = c(1, 0.18)) +
-  theme(plot.margin = margin(0, 20, 0, 40)))  # top, right, bottom, left
+# Figure 4
+combined <- plot_grid(top, bottom, ncol = 1, rel_heights = c(1, 0.1)) +
+  theme(plot.margin = margin(0, 10, 0, -10))  # top, right, bottom, left
 
-ggdraw(combined) +
-  draw_label("Temperature (°C)",
-             x = 0.5, y = 0.03, vjust = 0, size = 16) +
-  draw_label("Salinity (g/L of NaCl)",
-             x = 0.032, y = 0.5, angle = 90, vjust = 1, size = 16) +
-  draw_label("Full model",
-             x = 0.087, y = 0.88, vjust = 1, hjust = 0, size = 14) +
-  draw_label("Ecological null model",
-             x = 0.312, y = 0.88, vjust = 1, hjust = 0, size = 14) +
-  draw_label("Difference",
-             x = 0.539, y = 0.88, vjust = 1, hjust = 0, size = 14) +
-  draw_label("Significant differences",
-             x = 0.767, y = 0.88, vjust = 1, hjust = 0, size = 14) +
-  draw_label("C", #fontface = "bold",
-             x = 0.99, y = 0.772, vjust = 1, angle = 270, size = 16) +
-  draw_label("S", #fontface = "bold",
-             x = 0.99, y = 0.567, vjust = 1, angle = 270, size = 16) +
-  draw_label("T", #fontface = "bold",
-             x = 0.99, y = 0.36, vjust = 1, angle = 270, size = 16) +
-  draw_label("ST", #fontface = "bold",
-             x = 0.99, y = 0.156, vjust = 1, angle = 270, size = 16)
-# Save 10 x 12 inches, portrait mode
+(ggdraw(combined) +
+    draw_label("slope = 0.014, p < 0.001 ***",
+               x = 0.19, y = 0.88, vjust = 0, size = 10) +
+    draw_label("slope = -0.0004, p = 0.750",
+               x = 0.515, y = 0.88, vjust = 0, size = 10) +
+    draw_label("slope = 0.000007, p = 0.114",
+               x = 0.855, y = 0.88, vjust = 0, size = 10))
 
-
-
+# Save figure
+ggsave(filename = "Figure_4.pdf",
+       height = 3.6,
+       width = 9.6)
