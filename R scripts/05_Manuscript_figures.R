@@ -505,13 +505,18 @@ bottom <- plot_grid(legend_FR_traits,
 combined <- plot_grid(top, bottom, ncol = 1, rel_heights = c(1, 0.1)) +
   theme(plot.margin = margin(0, 10, 0, -10))  # top, right, bottom, left
 
+
+cor_b_speed <- cor.test(FR_traits_comparison$Mean_movement_speed, FR_traits_comparison$b.log)
+cor_b_size <- cor.test(FR_traits_comparison$Mean_cell_area, FR_traits_comparison$b.log)
+cor_h_size <- cor.test(FR_traits_comparison$Mean_cell_area, FR_traits_comparison$h)
+
 (ggdraw(combined) +
-    draw_label("slope = 0.014, p < 0.001 ***",
+    draw_label(paste0("r = ", round(cor_b_speed$estimate, digits = 4), ", p < 0.001 ***"),
                x = 0.19, y = 0.88, vjust = 0, size = 10) +
-    draw_label("slope = -0.0004, p = 0.750",
+    draw_label(paste0("r = ", round(cor_b_size$estimate, digits = 4), ", p = 0.7501"),
                x = 0.515, y = 0.88, vjust = 0, size = 10) +
-    draw_label("slope = 0.000007, p = 0.114",
-               x = 0.855, y = 0.88, vjust = 0, size = 10))
+    draw_label(paste0("r = ", round(cor_h_size$estimate, digits = 4), ", p = 0.114"),
+               x = 0.837, y = 0.88, vjust = 0, size = 10))
 
 # Save figure
 ggsave(filename = "Figure_4.pdf",

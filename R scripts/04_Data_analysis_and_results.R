@@ -32,85 +32,17 @@ load("Data/Traits_assay.RData")
 # Hypothesis 1: prey growth rates and traits exhibit plastic responses to assay stressors
 # --------------------------------------------------------------------------------------------------
 
-# Relevant estimates include "Assay_T28" and/or "Assay_S2.5"
-
-# ------------------------------------------
-# 4-way LMM of growth rate data
-# ------------------------------------------
-# Visualization of growth rate data
-# ggplot() +
-#   geom_boxplot(data = traits_assay, aes(x = Assay_environment, y = GR,
-#                                                           color = Selection_environment, fill = Selection_environment),
-#                alpha = 0.3, linewidth = 0.2) +
-#   geom_point(data = traits_assay, aes(x = Assay_environment, y = GR,
-#                                                         color = Selection_environment, fill = Selection_environment, shape = Biorep),
-#              alpha = 1, size = 1, position = position_jitterdodge(jitter.width = 0.09, dodge.width = 0.75)) +
-#   theme_bw() +
-#   labs(x = "Assay environment",
-#        y = latex2exp::TeX("Growth rate $ln(N_{t}/N_{0})/\\Delta t$"),
-#        color = "Selection environment",
-#        fill = "Selection environment",
-#        shape = "Replicate") +
-#   scale_color_manual(values = c("#000000", "#E69F00", "#56B4E9", "#009E73")) +
-#   scale_fill_manual(values = c("#000000", "#E69F00", "#56B4E9", "#009E73")) +
-#   geom_hline(yintercept = 0, linetype = 2, color = "gray") +
-#   theme(strip.background = element_blank())
-# ------------------------------------------
-
+# Growth rates
 GR_4_way_LMM <- lmer(GR ~ Selection_T * Selection_S * Assay_T * Assay_S + (1|Selection_line),
                      traits_assay)
 summary(GR_4_way_LMM)
 
-# Relevant estimates include "Assay_T28" and/or "Assay_S2.5"
-
-# ------------------------------------------
-# 4-way LMM of cell size data
-# ------------------------------------------
-# Visualization of cell size data
-# ggplot() +
-#   geom_boxplot(data = traits_assay, aes(x = Assay_environment, y = Mean_cell_area,
-#                                                           color = Selection_environment, fill = Selection_environment),
-#                alpha = 0.3, linewidth = 0.2) +
-#   geom_point(data = traits_assay, aes(x = Assay_environment, y = Mean_cell_area,
-#                                                         color = Selection_environment, fill = Selection_environment, shape = Biorep),
-#              alpha = 1, size = 1, position = position_jitterdodge(jitter.width = 0.1, dodge.width = 0.75)) +
-#   theme_bw() +
-#   labs(x = "Assay environment",
-#        y = latex2exp::TeX("Cell area $(µm^2)$"),
-#        color = "Selection environment",
-#        fill = "Selection environment",
-#        shape = "Replicate") +
-#   scale_color_manual(values = c("#000000", "#E69F00", "#56B4E9", "#009E73")) +
-#   scale_fill_manual(values = c("#000000", "#E69F00", "#56B4E9", "#009E73")) +
-#   theme(strip.background = element_blank())
-# ------------------------------------------
-
+# Cell size
 size_4_way_LMM <- lmer(Mean_cell_area ~ Selection_T * Selection_S * Assay_T * Assay_S + (1|Selection_line),
                        traits_assay)
 summary(size_4_way_LMM)
 
-# ------------------------------------------
-# 4-way LMM of movement speed data
-# ------------------------------------------
-# Visualization of movement speed data
-# ggplot() +
-#   geom_boxplot(data = traits_assay, aes(x = Assay_environment, y = Mean_movement_speed,
-#                                                           color = Selection_environment, fill = Selection_environment),
-#                alpha = 0.3, linewidth = 0.2) +
-#   geom_point(data = traits_assay, aes(x = Assay_environment, y = Mean_movement_speed,
-#                                                         color = Selection_environment, fill = Selection_environment, shape = Biorep),
-#              alpha = 1, size = 1, position = position_jitterdodge(jitter.width = 0.1, dodge.width = 0.75)) +
-#   theme_bw() +
-#   labs(x = "Assay environment",
-#        y = latex2exp::TeX("Movement speed ($µm$ $sec^{-1}$)"),
-#        color = "Selection environment",
-#        fill = "Selection environment",
-#        shape = "Replicate") +
-#   scale_color_manual(values = c("#000000", "#E69F00", "#56B4E9", "#009E73")) +
-#   scale_fill_manual(values = c("#000000", "#E69F00", "#56B4E9", "#009E73")) +
-#   theme(strip.background = element_blank())
-# ------------------------------------------
-
+# Movement speed
 speed_4_way_LMM <- lmer(Mean_movement_speed ~ Selection_T * Selection_S * Assay_T * Assay_S + (1|Selection_line),
                         traits_assay)
 summary(speed_4_way_LMM)
@@ -118,10 +50,7 @@ summary(speed_4_way_LMM)
 # --------------------------------------------------------------------------------------------------
 # Hypothesis 2: evolutionary responses of prey traits and growth rates to single stressors contrast 
 # their plastic responses to the same stressor
-# --------------------------------------------------------------------------------------------------
-
-
-# --------------------------------------------------------------------------------------------------
+# 
 # Hypothesis 3: evolution in multi-stressor environments is hindered compared to evolution in 
 # single-stressor environments
 # --------------------------------------------------------------------------------------------------
@@ -132,18 +61,12 @@ summary(speed_4_way_LMM)
 # This does not affect the results in any way, other than changing the names of the variables.
 
 # Relevant contrasts
-cont_evo <- list(
-  deltaS = c(-1, 1, 0, 0),    # deltaST = ST - C
+cont <- list(
+  deltaS = c(-1, 1, 0, 0),    # deltaS = S - C
   deltaT = c(-1, 0, 1, 0),    # deltaT = T - C
-  deltaST = c(-1, 0, 0, 1),   # deltaS = S - C
+  deltaST = c(-1, 0, 0, 1),   # deltaST = ST - C
   `deltaST - deltaS` = c(0, -1, 0, 1),   # deltaST - deltaS = (ST - C) - (S - C) = ST - S
-  `deltaST - deltaT` = c(0, 0, -1, 1)    # (ST - C) - (T - C) = ST - T
-)
-
-cont_plastic <- list(
-  deltaS = c(-1, 1, 0, 0),    # deltaST = ST - C
-  deltaT = c(-1, 0, 1, 0),    # deltaT = T - C
-  deltaST = c(-1, 0, 0, 1)   # deltaS = S - C
+  `deltaST - deltaT` = c(0, 0, -1, 1)    # deltaST - deltaS = (ST - C) - (T - S) = ST - S
 )
 
 # --------------- Growth rate
@@ -152,15 +75,10 @@ GR_2_way_LMM <- lmer(GR ~ Selection_environment * Assay_environment + (1|Selecti
 emm_GR <- emmeans(GR_2_way_LMM, ~ Selection_environment | Assay_environment)
 
 # Checking evolutionary responses in different assay environments
-contrast(emm_GR, cont_evo, by = "Assay_environment") %>%
-  as.data.frame()
-
-# Checking plastic responses of different selection histories
-contrast(emm_GR, cont_plastic, by = "Selection_environment") %>%
-  as.data.frame()
-
-
-
+contrast(emm_GR, cont, by = "Assay_environment") %>%
+  as.data.frame() %>%
+  filter((Assay_environment == "S" & contrast %in% c("deltaS", "deltaST", "deltaST - deltaS")) |
+         (Assay_environment == "T" & contrast %in% c("deltaT", "deltaST", "deltaST - deltaT")))
 
 # --------------- Cell size
 size_2_way_LMM <- lmer(Mean_cell_area ~ Selection_environment * Assay_environment + (1|Selection_line),
@@ -168,15 +86,10 @@ size_2_way_LMM <- lmer(Mean_cell_area ~ Selection_environment * Assay_environmen
 emm_size <- emmeans(size_2_way_LMM, ~ Selection_environment | Assay_environment)
 
 # Checking evolutionary responses in different assay environments
-contrast(emm_size, cont_evo, by = "Assay_environment") %>%
-  as.data.frame()
-
-# Checking plastic responses of different selection histories
-contrast(emm_size, cont_plastic, by = "Selection_environment") %>%
-  as.data.frame()
-
-
-
+contrast(emm_size, cont, by = "Assay_environment") %>%
+  as.data.frame() %>%
+  filter((Assay_environment == "S" & contrast %in% c("deltaS", "deltaST", "deltaST - deltaS")) |
+           (Assay_environment == "T" & contrast %in% c("deltaT", "deltaST", "deltaST - deltaT")))
 
 # --------------- Movement speed
 speed_2_way_LMM <- lmer(Mean_movement_speed ~ Selection_environment * Assay_environment + (1|Selection_line),
@@ -184,12 +97,10 @@ speed_2_way_LMM <- lmer(Mean_movement_speed ~ Selection_environment * Assay_envi
 emm_speed <- emmeans(speed_2_way_LMM, ~ Selection_environment | Assay_environment)
 
 # Checking evolutionary responses in different assay environments
-contrast(emm_speed, cont_evo, by = "Assay_environment") %>%
-  as.data.frame()
-
-# Checking plastic responses of different selection histories
-contrast(emm_speed, cont_plastic, by = "Selection_environment") %>%
-  as.data.frame()
+contrast(emm_speed, cont, by = "Assay_environment") %>%
+  as.data.frame() %>%
+  filter((Assay_environment == "S" & contrast %in% c("deltaS", "deltaST", "deltaST - deltaS")) |
+           (Assay_environment == "T" & contrast %in% c("deltaT", "deltaST", "deltaST - deltaT")))
 
 save(emm_GR, emm_size, emm_speed, file = "Data/Marginal_means_estimates.RData")
 
@@ -273,33 +184,42 @@ blog_speed_mod <- lm(b.log ~ Mean_movement_speed,
                      FR_traits_comparison)
 summary(blog_speed_mod)
 
+cor.test(FR_traits_comparison$Mean_movement_speed, FR_traits_comparison$b.log)
+
 # n = 4 regression
 blog_speed_mod_reduced <- lm(b.log ~ Mean_movement_speed,
                              FR_trait_means_comparison)
 summary(blog_speed_mod_reduced)
+
+cor.test(FR_trait_means_comparison$Mean_movement_speed, FR_trait_means_comparison$b.log)
 
 # --------------- Cell size and space clearance rate
 blog_size_mod <- lm(b.log ~ Mean_cell_area,
                     FR_traits_comparison)
 summary(blog_size_mod)
 
+cor.test(FR_traits_comparison$Mean_cell_area, FR_traits_comparison$b.log)
+
 # n = 4 regression
 blog_size_mod_reduced <- lm(b.log ~ Mean_cell_area,
                             FR_trait_means_comparison)
 summary(blog_size_mod_reduced)
+
+cor.test(FR_trait_means_comparison$Mean_cell_area, FR_trait_means_comparison$b.log)
 
 # --------------- Cell size and handling time
 h_size_mod <- lm(h ~ Mean_cell_area,
                  FR_traits_comparison)
 summary(h_size_mod)
 
+cor.test(FR_traits_comparison$Mean_cell_area, FR_traits_comparison$h)
+
 # n = 4 regression
 h_size_mod_reduced <- lm(h ~ Mean_cell_area,
                          FR_trait_means_comparison)
 summary(h_size_mod_reduced)
 
+cor.test(FR_trait_means_comparison$Mean_cell_area, FR_trait_means_comparison$h)
+
 save(blog_speed_mod, blog_size_mod, h_size_mod, FR_traits_comparison,
      file = "Data/FR_params_and_prey_traits_regressions.RData")
-
-
-
