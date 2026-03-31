@@ -221,5 +221,5 @@ summary(h_size_mod_reduced)
 
 cor.test(FR_trait_means_comparison$Mean_cell_area, FR_trait_means_comparison$h)
 
-save(blog_speed_mod, blog_size_mod, h_size_mod, FR_traits_comparison,
+save(blog_speed_mod_reduced, blog_size_mod_reduced, h_size_mod_reduced, FR_trait_means_comparison,
      file = "Data/FR_params_and_prey_traits_regressions.RData")

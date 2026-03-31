@@ -49,7 +49,7 @@ P_GR <- ggplot() +
              size = 1.5, position = pos) +
   theme_light() +
   labs(x = "Assay environment",
-       y = latex2exp::TeX("Growth rate $ln(N_{t}/N_{0})/\\Delta t$"),
+       y = latex2exp::TeX("Prey growth rate ($day^{-1}$)"),
        color = "Selection environment",
        fill = "Selection environment",
        shape = "Biological replicate") +
@@ -72,7 +72,7 @@ P_size <- ggplot() +
              size = 1.5, position = pos) +
   theme_light() +
   labs(x = "Assay environment",
-       y = latex2exp::TeX("Cell area $(µm^2)$"),
+       y = latex2exp::TeX("Prey cell area $(µm^2)$"),
        color = "Selection environment",
        fill = "Selection environment",
        shape = "Biological replicate") +
@@ -94,7 +94,7 @@ P_speed <- ggplot() +
              size = 1.5, position = pos) +
   theme_light() +
   labs(x = "Assay environment",
-       y = latex2exp::TeX("Movement speed ($µm$ $sec^{-1}$)"),
+       y = latex2exp::TeX("Prey mov. speed ($µm$ $sec^{-1}$)"),
        color = "Selection environment",
        fill = "Selection environment",
        shape = "Biological replicate") +
@@ -126,86 +126,45 @@ ggsave(filename = "Figure_2.pdf",
 
 
 
-# library(patchwork)
-# library(cowplot)
-# 
-# # Extract the legends
-# legend_growth <- get_legend(
-#   p11 + theme(legend.position = "bottom",
-#               # legend.text = element_text(size = 12),
-#               legend.title = element_text(size = 14))
-# )
-# legend_diff <- get_legend(
-#   p13 + theme(legend.position = "bottom",
-#               # legend.text = element_text(size = 12),
-#               legend.title = element_text(size = 14))
-# )
-# legend_sign <- get_legend(
-#   p24 + theme(legend.position = "right",
-#               legend.text = element_text(size = 12))
-# )
-# 
-# 
-# 
-# # Arrange the grid
-# (top_row <- (P_GR | P_size | P_speed | get_legend(P_GR + theme(legend.position = "right",
-#                                                               legend.text = element_text(size = 12),
-#                                                               legend.title = element_text(size = 14)))) +
-#   plot_layout(ncol = 2, nrow = 2)  +
-#   plot_annotation(tag_levels = "a") & 
-#   theme(plot.tag = element_text(face = "bold", margin = margin(t = -20, r = 0, b = 0, l = 0))) &
-#   theme(plot.margin = margin(10, 10, 80, 10)) &  # top, right, bottom, left
-#   theme(axis.text = element_text(size = 12)))
-# 
-# (p_a <- plot_grid(P_GR, ncol = 1))
-# (p_b <- plot_grid(P_size, ncol = 1))
-# (p_c <- plot_grid(P_speed, ncol = 1))
-# (p_leg <- plot_grid(get_legend(P_GR + theme(legend.position = "right",
-#                                           legend.text = element_text(size = 22),
-#                                           legend.title = element_text(size = 24))), ncol = 1) & 
-#   theme(plot.tag = element_text(face = "bold", margin = margin(t = -20, r = 0, b = 0, l = 0))) &
-#   theme(plot.margin = margin(-60, -60, -80, -10)) &  # top, right, bottom, left
-#   theme(axis.text = element_text(size = 12)))
-# )
-# 
-# combined <- plot_grid(bottom, top, ncol = 1, rel_heights = c(0.18, 1)) +
-#   theme(plot.margin = margin(0, 20, 0, 40))  # top, right, bottom, left
-# 
-# 
-# # Top row
-# top <- plot_grid(top_row, ncol = 1)
-# 
-# # Bottom row: legend
-# bottom <- plot_grid(legend_growth, legend_diff, legend_sign,
-#                       ncol = 3, rel_widths = c(2, 1, 1)) +
-#   theme(plot.margin = margin(-30, 0, 0, 0))
-# 
-# # Combine the two
-# combined <- plot_grid(bottom, top, ncol = 1, rel_heights = c(0.18, 1)) +
-#   theme(plot.margin = margin(0, 20, 0, 40))  # top, right, bottom, left
-# 
-# ggdraw(combined) +
-#   draw_label("Temperature (°C)", 
-#              x = 0.5, y = 0.03, vjust = 0, size = 16) +
-#   draw_label("Salinity (g/L of NaCl)",
-#              x = 0.032, y = 0.5, angle = 90, vjust = 1, size = 16) +
-#   draw_label("Full model",
-#              x = 0.087, y = 0.88, vjust = 1, hjust = 0, size = 14) +
-#   draw_label("Ecological null model",
-#              x = 0.312, y = 0.88, vjust = 1, hjust = 0, size = 14) +
-#   draw_label("Difference",
-#              x = 0.539, y = 0.88, vjust = 1, hjust = 0, size = 14) +
-#   draw_label("Significant differences",
-#              x = 0.767, y = 0.88, vjust = 1, hjust = 0, size = 14) +
-#   draw_label("C", #fontface = "bold",
-#              x = 0.99, y = 0.772, vjust = 1, angle = 270, size = 16) +
-#   draw_label("S", #fontface = "bold",
-#              x = 0.99, y = 0.567, vjust = 1, angle = 270, size = 16) +
-#   draw_label("T", #fontface = "bold",
-#              x = 0.99, y = 0.36, vjust = 1, angle = 270, size = 16) +
-#   draw_label("ST", #fontface = "bold",
-#              x = 0.99, y = 0.156, vjust = 1, angle = 270, size = 16)
-# # Save 10 x 12 inches, portrait mode
+library(patchwork)
+library(cowplot)
+
+# Extract the legends
+legend_growth <- get_legend(
+  P_GR + theme(legend.position = "bottom",
+              # legend.text = element_text(size = 12),
+              legend.title = element_text(size = 14, hjust = 0.5),
+              legend.title.position = "top")
+)
+
+
+
+# Arrange the grid
+(bottom_row <- (P_GR +
+                  theme(axis.title.y = element_text(hjust = 0.5, vjust = 0.5)) | P_size | P_speed) +
+  plot_layout(ncol = 3, nrow = 1)  +
+  plot_annotation(tag_levels = "a") &
+  theme(plot.tag = element_text(face = "bold",
+                                margin = margin(t = -20, r = 0, b = 0, l = 0))) &
+  theme(plot.margin = margin(10, 20, 0, 0)) &  # top, right, bottom, left
+  theme(axis.text = element_text(size = 12),
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12)))
+
+# Top row
+bottom <- plot_grid(bottom_row, ncol = 1)
+
+# Bottom row: legend
+top <- plot_grid(legend_growth,
+                      ncol = 1) +
+  theme(plot.margin = margin(0, 0, 0, 0))
+
+# Combine the two
+(combined <- plot_grid(top, bottom, ncol = 1, rel_heights = c(0.18, 1)) +
+  theme(plot.margin = margin(0, 20, 0, 40)))  # top, right, bottom, left
+
+ggsave(filename = "Figure_2test.pdf",
+       width = 10, height = 3.25)
 
 
 
@@ -413,27 +372,29 @@ rm(list = ls())
 library(tidyverse)
 library(generics)
 library(broom)
+library(patchwork)
+library(cowplot)
 
 # ---------------------- Loading relevant datasets ----------------------
 # Regressions of FR parameters and prey traits, and corresponding dataset
 load("Data/FR_params_and_prey_traits_regressions.RData")
 
 newdat <- data.frame(
-  Mean_movement_speed = seq(min(FR_traits_comparison$Mean_movement_speed),
-                            max(FR_traits_comparison$Mean_movement_speed),
+  Mean_movement_speed = seq(min(FR_trait_means_comparison$Mean_movement_speed),
+                            max(FR_trait_means_comparison$Mean_movement_speed),
                             length.out = 200),
-  Mean_cell_area = seq(min(FR_traits_comparison$Mean_cell_area),
-                       max(FR_traits_comparison$Mean_cell_area),
+  Mean_cell_area = seq(min(FR_trait_means_comparison$Mean_cell_area),
+                       max(FR_trait_means_comparison$Mean_cell_area),
                        length.out = 200)
 )
 
-Pred_blog_speed <- cbind(newdat, predict(blog_speed_mod, newdat, interval = "confidence", level = 0.95))
-Pred_blog_size <- cbind(newdat, predict(blog_size_mod, newdat, interval = "confidence", level = 0.95))
-Pred_h_size <- cbind(newdat, predict(h_size_mod, newdat, interval = "confidence", level = 0.95))
+Pred_blog_speed <- cbind(newdat, predict(blog_speed_mod_reduced, newdat, interval = "confidence", level = 0.95))
+Pred_blog_size <- cbind(newdat, predict(blog_size_mod_reduced, newdat, interval = "confidence", level = 0.95))
+Pred_h_size <- cbind(newdat, predict(h_size_mod_reduced, newdat, interval = "confidence", level = 0.95))
 
 # One plot for each regression
-plot_b_speed <- ggplot() +
-    geom_point(data = FR_traits_comparison, aes(x = Mean_movement_speed, y = b.log, color = Selection_environment)) +
+(plot_b_speed <- ggplot() +
+    geom_point(data = FR_trait_means_comparison, aes(x = Mean_movement_speed, y = b.log, color = Selection_environment)) +
     scale_color_manual(values = c("#716868", "#E69F00", "#56B4E9", "#009E73")) +
     # scale_shape_manual(values = 22:26) +
     geom_line(data = Pred_blog_speed, aes(x = Mean_movement_speed, y = fit)) +
@@ -445,11 +406,10 @@ plot_b_speed <- ggplot() +
        y = latex2exp::TeX("$ln(b)$"),
        color = "Selection environment",
        shape = "Biological replicate") +
-    theme(legend.position = "none") +
-  ylim(-1.8, 0.15)
+    theme(legend.position = "none"))
 
 (plot_b_size <- ggplot() +
-  geom_point(data = FR_traits_comparison, aes(x = Mean_cell_area, y = b.log, color = Selection_environment)) +
+  geom_point(data = FR_trait_means_comparison, aes(x = Mean_cell_area, y = b.log, color = Selection_environment)) +
   scale_color_manual(values = c("#716868", "#E69F00", "#56B4E9", "#009E73")) +
   # scale_shape_manual(values = 22:26) +
   geom_line(data = Pred_blog_size, aes(x = Mean_cell_area, y = fit)) +
@@ -461,11 +421,10 @@ plot_b_speed <- ggplot() +
        y = latex2exp::TeX("$ln(b)$"),
        color = "Selection environment",
        shape = "Biological replicate") +
-    theme(legend.position = "none") +
-  ylim(-1.8, 0.15))
+    theme(legend.position = "none"))
 
-plot_h_size <- ggplot() +
-  geom_point(data = FR_traits_comparison, aes(x = Mean_cell_area, y = h, color = Selection_environment)) +
+(plot_h_size <- ggplot() +
+  geom_point(data = FR_trait_means_comparison, aes(x = Mean_cell_area, y = h, color = Selection_environment)) +
   scale_color_manual(values = c("#716868", "#E69F00", "#56B4E9", "#009E73")) +
   # scale_shape_manual(values = 22:26) +
   geom_line(data = Pred_h_size, aes(x = Mean_cell_area, y = fit)) +
@@ -477,7 +436,7 @@ plot_h_size <- ggplot() +
        y = latex2exp::TeX("$h$"),
        color = "Selection environment",
        shape = "Biological replicate") +
-    theme(legend.position = "none")
+    theme(legend.position = "none"))
 
 # Top row with plots
 top_row <- (plot_b_speed | plot_b_size | plot_h_size) +
@@ -506,16 +465,16 @@ combined <- plot_grid(top, bottom, ncol = 1, rel_heights = c(1, 0.1)) +
   theme(plot.margin = margin(0, 10, 0, -10))  # top, right, bottom, left
 
 
-cor_b_speed <- cor.test(FR_traits_comparison$Mean_movement_speed, FR_traits_comparison$b.log)
-cor_b_size <- cor.test(FR_traits_comparison$Mean_cell_area, FR_traits_comparison$b.log)
-cor_h_size <- cor.test(FR_traits_comparison$Mean_cell_area, FR_traits_comparison$h)
+cor_b_speed <- cor.test(FR_trait_means_comparison$Mean_movement_speed, FR_trait_means_comparison$b.log)
+cor_b_size <- cor.test(FR_trait_means_comparison$Mean_cell_area, FR_trait_means_comparison$b.log)
+cor_h_size <- cor.test(FR_trait_means_comparison$Mean_cell_area, FR_trait_means_comparison$h)
 
 (ggdraw(combined) +
-    draw_label(paste0("r = ", round(cor_b_speed$estimate, digits = 4), ", p < 0.001 ***"),
+    draw_label(paste0("r = ", round(cor_b_speed$estimate, digits = 4), ", p = 0.0121 *"),
                x = 0.19, y = 0.88, vjust = 0, size = 10) +
-    draw_label(paste0("r = ", round(cor_b_size$estimate, digits = 4), ", p = 0.7501"),
+    draw_label(paste0("r = ", round(cor_b_size$estimate, digits = 4), ", p = 0.8776"),
                x = 0.515, y = 0.88, vjust = 0, size = 10) +
-    draw_label(paste0("r = ", round(cor_h_size$estimate, digits = 4), ", p = 0.114"),
+    draw_label(paste0("r = ", round(cor_h_size$estimate, digits = 4), ", p = 0.1918"),
                x = 0.837, y = 0.88, vjust = 0, size = 10))
 
 # Save figure
