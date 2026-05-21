@@ -3,7 +3,7 @@
 # environments
 # ----------------------------------------------------------------------------------------------------------------------------------
 #
-# The following R-code is based on the method of:
+# The following R-code is based on the methods of:
 #
 # Rosenbaum, B. & Rall, B.C. (2018). Fitting functional responses: Direct parameter estimation by
 # simulating differential equations. Methods in Ecology and Evolution.
@@ -28,8 +28,12 @@
 # For this, the package odeintr is used. For a manual about the use of the method and a detailed
 # description of the functions, see the paper of Rosenbaum and Rall (2018) mentioned above.
 # 
-# NOTE: the package odeintr is available on github (thk686/odeintr) for R version 4.3.2 and is 
-# unsupported for newer versions of R at the moment.
+# NOTE: this script was run on R version 4.3.2 (provided in folder
+# "R versions/R version for search grids and ODE fitting/"). It will not run on R version 4.5.2
+# due to package compatibility issues). The "odeintr" package is available on github for R version
+# 4.3.2 and is unsupported for newer versions of R at the moment. A working version of the package
+# can be installed with the following command:
+# install.packages("R versions/R version for search grids and ODE fitting/odeintr_1.7.1_patched_clean.tar.gz", repos = NULL, type = "source")
 # 
 # Rdata files with the output from the search grid process can be found in the folder
 # "Data/FR assay/03 - FR search grid" and can be manually loaded into the workspace.

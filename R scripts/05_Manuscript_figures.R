@@ -5,14 +5,18 @@
 # The following code yields the two manuscript figures:
 # 
 # - Figure 1: functional response parameters and fits
-# - Figure 2: prey growth rates and traits
+# - Figure 3: prey growth rates and traits
 # 
 # See figure labels in the main text for detailed descriptions.
+# 
+# NOTE: this script was run on R version 4.5.2 (provided in folder
+# "R versions/R version for data analysis"). It will not run on R version 4.3.2 due to package
+# compatibility issues.
 # 
 # ----------------------------------------------------------------------------------------------------------------------------------
 
 # --------------------------------------------------------------------------------------------------
-# Figure 2: prey traits and growth rate
+# Figure 3: prey traits and growth rate
 # --------------------------------------------------------------------------------------------------
 
 rm(list = ls())
@@ -34,6 +38,7 @@ dd_size <- as.data.frame(summary(emm_size)) %>%
 dd_speed <- as.data.frame(summary(emm_speed)) %>%
   dplyr::select(Assay_environment, Selection_environment, emmean, SE)
 
+# Plotting the data for each response variable
 pos <- position_jitterdodge(jitter.width = 0.1, dodge.width = 0.75)
 
 P_GR <- ggplot() +
@@ -103,67 +108,35 @@ P_speed <- ggplot() +
   theme(legend.position = "none") +
   theme(strip.background = element_blank())
 
-ggpubr::ggarrange(P_GR, P_size, P_speed,
-                  ncol = 3, nrow = 1, common.legend = T, labels = "auto")
-ggsave(filename = "Figure_2.pdf",
-       width = 10, height = 3.25)
-# Save as pdf 3.25 x 10 inches landscape mode
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-library(patchwork)
-library(cowplot)
-
-# Extract the legends
+# Extract the common legend
 legend_growth <- get_legend(
   P_GR + theme(legend.position = "bottom",
-              # legend.text = element_text(size = 12),
-              legend.title = element_text(size = 14, hjust = 0.5),
-              legend.title.position = "top")
+               # legend.text = element_text(size = 12),
+               legend.title = element_text(size = 14, hjust = 0.5),
+               legend.title.position = "top")
 )
-
-
-
-# Arrange the grid
-(bottom_row <- (P_GR +
-                  theme(axis.title.y = element_text(hjust = 0.5, vjust = 0.5)) | P_size | P_speed) +
-  plot_layout(ncol = 3, nrow = 1)  +
-  plot_annotation(tag_levels = "a") &
-  theme(plot.tag = element_text(face = "bold",
-                                margin = margin(t = -20, r = 0, b = 0, l = 0))) &
-  theme(plot.margin = margin(10, 20, 0, 0)) &  # top, right, bottom, left
-  theme(axis.text = element_text(size = 12),
-        axis.title.x = element_text(size = 12),
-        axis.title.y = element_text(size = 12)))
-
-# Top row
-bottom <- plot_grid(bottom_row, ncol = 1)
-
-# Bottom row: legend
-top <- plot_grid(legend_growth,
-                      ncol = 1) +
+legend_row <- plot_grid(legend_growth,
+                        ncol = 1) +
   theme(plot.margin = margin(0, 0, 0, 0))
 
-# Combine the two
-(combined <- plot_grid(top, bottom, ncol = 1, rel_heights = c(0.18, 1)) +
-  theme(plot.margin = margin(0, 20, 0, 40)))  # top, right, bottom, left
+# Arrange the grid
+facet_plots <- (P_GR +
+                  theme(axis.title.y = element_text(hjust = 0.5, vjust = 0.5)) | P_size | P_speed) +
+    plot_layout(ncol = 3, nrow = 1)  +
+    plot_annotation(tag_levels = "a") &
+    theme(plot.tag = element_text(face = "bold",
+                                  margin = margin(t = -20, r = 0, b = 0, l = 0))) &
+    theme(plot.margin = margin(10, 20, 0, 0)) &  # top, right, bottom, left
+    theme(axis.text = element_text(size = 12),
+          axis.title.x = element_text(size = 12),
+          axis.title.y = element_text(size = 12))
+facet_row <- plot_grid(facet_plots, ncol = 1)
 
-ggsave(filename = "Figure_2test.pdf",
+# Combine the two
+plot_grid(legend_row, facet_row, ncol = 1, rel_heights = c(0.18, 1)) +
+    theme(plot.margin = margin(0, 20, 0, 40))  # top, right, bottom, left
+
+ggsave(filename = "Figures/Figure_3.pdf",
        width = 10, height = 3.25)
 
 
@@ -208,9 +181,6 @@ library(generics)
 library(broom)
 
 # ---------------------- Loading relevant datasets ----------------------
-# Raw data
-load("Data/FR assay/01 - Raw data/Dataset_all.RData")
-
 # Model predictions from best model fit (created in 03_FR_fits_simulations.R)
 load("Data/FR assay/04 - FR fits and simulations/Best_fit_curves_and_95%CIs.RData")
 
@@ -355,129 +325,10 @@ PFR_CST <- ggplot(filter(FR_predictions, Prey_start_density < 1000,
   ylim(0, 85)
 
 ggpubr::ggarrange(Pb, Ph, Pm, PFR_CS, PFR_CT, PFR_CST, ncol = 3, nrow = 2, labels = "auto", common.legend = T)
-# Save as pdf with figure dimensions 10 inches x 6 inches landscape mode
-ggsave(filename = "Figure_3.pdf",
+
+ggsave(filename = "Figures/Figure_4.pdf",
        width = 10, height = 6)
 
 
 
 
-
-# --------------------------------------------------------------------------------------------------
-# Figure 4: FR parameters and prey traits
-# --------------------------------------------------------------------------------------------------
-
-rm(list = ls())
-
-library(tidyverse)
-library(generics)
-library(broom)
-library(patchwork)
-library(cowplot)
-
-# ---------------------- Loading relevant datasets ----------------------
-# Regressions of FR parameters and prey traits, and corresponding dataset
-load("Data/FR_params_and_prey_traits_regressions.RData")
-
-newdat <- data.frame(
-  Mean_movement_speed = seq(min(FR_trait_means_comparison$Mean_movement_speed),
-                            max(FR_trait_means_comparison$Mean_movement_speed),
-                            length.out = 200),
-  Mean_cell_area = seq(min(FR_trait_means_comparison$Mean_cell_area),
-                       max(FR_trait_means_comparison$Mean_cell_area),
-                       length.out = 200)
-)
-
-Pred_blog_speed <- cbind(newdat, predict(blog_speed_mod_reduced, newdat, interval = "confidence", level = 0.95))
-Pred_blog_size <- cbind(newdat, predict(blog_size_mod_reduced, newdat, interval = "confidence", level = 0.95))
-Pred_h_size <- cbind(newdat, predict(h_size_mod_reduced, newdat, interval = "confidence", level = 0.95))
-
-# One plot for each regression
-(plot_b_speed <- ggplot() +
-    geom_point(data = FR_trait_means_comparison, aes(x = Mean_movement_speed, y = b.log, color = Selection_environment)) +
-    scale_color_manual(values = c("#716868", "#E69F00", "#56B4E9", "#009E73")) +
-    # scale_shape_manual(values = 22:26) +
-    geom_line(data = Pred_blog_speed, aes(x = Mean_movement_speed, y = fit)) +
-    geom_ribbon(data = Pred_blog_speed,
-              aes(x = Mean_movement_speed, y = fit, ymin = lwr, ymax = upr),
-              alpha = 0.1) +
-  theme_light() +
-    labs(x = latex2exp::TeX("Movement speed ($µm$ $sec^{-1}$)"),
-       y = latex2exp::TeX("$ln(b)$"),
-       color = "Selection environment",
-       shape = "Biological replicate") +
-    theme(legend.position = "none"))
-
-(plot_b_size <- ggplot() +
-  geom_point(data = FR_trait_means_comparison, aes(x = Mean_cell_area, y = b.log, color = Selection_environment)) +
-  scale_color_manual(values = c("#716868", "#E69F00", "#56B4E9", "#009E73")) +
-  # scale_shape_manual(values = 22:26) +
-  geom_line(data = Pred_blog_size, aes(x = Mean_cell_area, y = fit)) +
-  geom_ribbon(data = Pred_blog_size,
-              aes(x = Mean_cell_area, y = fit, ymin = lwr, ymax = upr),
-              alpha = 0.1) +
-  theme_light() +
-  labs(x = latex2exp::TeX("Cell area $(µm^2)$"),
-       y = latex2exp::TeX("$ln(b)$"),
-       color = "Selection environment",
-       shape = "Biological replicate") +
-    theme(legend.position = "none"))
-
-(plot_h_size <- ggplot() +
-  geom_point(data = FR_trait_means_comparison, aes(x = Mean_cell_area, y = h, color = Selection_environment)) +
-  scale_color_manual(values = c("#716868", "#E69F00", "#56B4E9", "#009E73")) +
-  # scale_shape_manual(values = 22:26) +
-  geom_line(data = Pred_h_size, aes(x = Mean_cell_area, y = fit)) +
-  geom_ribbon(data = Pred_h_size,
-              aes(x = Mean_cell_area, y = fit, ymin = lwr, ymax = upr),
-              alpha = 0.1) +
-  theme_light() +
-  labs(x = latex2exp::TeX("Cell area $(µm^2)$"),
-       y = latex2exp::TeX("$h$"),
-       color = "Selection environment",
-       shape = "Biological replicate") +
-    theme(legend.position = "none"))
-
-# Top row with plots
-top_row <- (plot_b_speed | plot_b_size | plot_h_size) +
-  plot_layout(ncol = 3, nrow = 1)  +
-  plot_annotation(tag_levels = "a") &
-  theme(plot.tag = element_text(face = "bold", margin = margin(t = -20, r = 0, b = 0, l = 0))) &
-  theme(plot.margin = margin(10, 0, 10, 10)) &  # top, right, bottom, left
-  theme(axis.text = element_text(size = 12))
-
-top <- plot_grid(top_row, ncol = 1)
-
-# Bottom row with legends
-legend_FR_traits <- get_legend(
-  plot_b_speed + theme(legend.position = "bottom",
-                       # legend.text = element_text(size = 12),
-                       legend.title = element_text(hjust = 0.5),
-                       legend.title.position = "top")
-)
-
-bottom <- plot_grid(legend_FR_traits,
-                      ncol = 1) +
-  theme(plot.margin = margin(0, 0, 0, 0))
-
-# Figure 4
-combined <- plot_grid(top, bottom, ncol = 1, rel_heights = c(1, 0.1)) +
-  theme(plot.margin = margin(0, 10, 0, -10))  # top, right, bottom, left
-
-
-cor_b_speed <- cor.test(FR_trait_means_comparison$Mean_movement_speed, FR_trait_means_comparison$b.log)
-cor_b_size <- cor.test(FR_trait_means_comparison$Mean_cell_area, FR_trait_means_comparison$b.log)
-cor_h_size <- cor.test(FR_trait_means_comparison$Mean_cell_area, FR_trait_means_comparison$h)
-
-(ggdraw(combined) +
-    draw_label(paste0("r = ", round(cor_b_speed$estimate, digits = 4), ", p = 0.0121 *"),
-               x = 0.19, y = 0.88, vjust = 0, size = 10) +
-    draw_label(paste0("r = ", round(cor_b_size$estimate, digits = 4), ", p = 0.8776"),
-               x = 0.515, y = 0.88, vjust = 0, size = 10) +
-    draw_label(paste0("r = ", round(cor_h_size$estimate, digits = 4), ", p = 0.1918"),
-               x = 0.837, y = 0.88, vjust = 0, size = 10))
-
-# Save figure
-ggsave(filename = "Figure_4.pdf",
-       height = 3.6,
-       width = 9.6)

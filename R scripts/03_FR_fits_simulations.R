@@ -15,6 +15,13 @@
 #     these to simulate 1000 FR fits for each prey selection environment and 
 #     compute 95% CIs around the fits given by the best fit coefficients.
 # 
+# NOTE: this script was run on R version 4.3.2 (provided in folder
+# "R versions/R version for search grids and ODE fitting/"). It will not run on R version 4.5.2
+# due to package compatibility issues). The "odeintr" package is available on github for R version
+# 4.3.2 and is unsupported for newer versions of R at the moment. A working version of the package
+# can be installed with the following command:
+# install.packages("R versions/R version for search grids and ODE fitting/odeintr_1.7.1_patched_clean.tar.gz", repos = NULL, type = "source")
+# 
 # ----------------------------------------------------------------------------------------------------------------------------------
 
 library(tidyverse)

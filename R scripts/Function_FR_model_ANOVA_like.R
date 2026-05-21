@@ -10,7 +10,14 @@
 # Daugaard, U., Petchey, O.L. & Pennekamp, F. (2019). Warming can destabilize predator–prey 
 # interactions by shifting the functional response from Type III to Type II.
 #
+# NOTE: the "odeintr" package is available on github for R version 4.3.2 and is unsupported for newer 
+# versions of R at the moment. A working version of the package can be installed with the following
+# command:
+# install.packages("R versions/R version for search grids and ODE fitting/odeintr_1.7.1_patched_clean.tar.gz", repos = NULL, type = "source")
+# 
 # ----------------------------------------------------------------------------------------------------------------------------------
+
+Sys.setenv("PKG_CXXFLAGS"="-std=gnu++14")
 
 library(odeintr)
 
