@@ -53,7 +53,7 @@ summary(speed_4_way_LMM)
 
 # --------------------------------------------------------------------------------------------------
 # Hypothesis 2: evolutionary responses of prey traits and growth rates to single stressors weaken
-# their plastic responses to the same stressor 
+# their plastic responses to the same stressor
 # 
 # Hypothesis 3: a second stressor in the selection environment will decrease the evolutionary
 # response to the first stressor
@@ -70,7 +70,7 @@ cont <- list(
   deltaT = c(-1, 0, 1, 0),    # deltaT = T - C
   deltaST = c(-1, 0, 0, 1),   # deltaST = ST - C
   `deltaST - deltaS` = c(0, -1, 0, 1),   # deltaST - deltaS = (ST - C) - (S - C) = ST - S
-  `deltaST - deltaT` = c(0, 0, -1, 1)    # deltaST - deltaS = (ST - C) - (T - S) = ST - S
+  `deltaST - deltaT` = c(0, 0, -1, 1)    # deltaST - deltaT = (ST - C) - (T - T) = ST - T
 )
 
 # --------------- Growth rate
@@ -82,7 +82,7 @@ emm_GR <- emmeans(GR_2_way_LMM, ~ Selection_environment | Assay_environment)
 contrast(emm_GR, cont, by = "Assay_environment") %>%
   as.data.frame() %>%
   filter((Assay_environment == "S" & contrast %in% c("deltaS", "deltaST", "deltaST - deltaS")) |
-         (Assay_environment == "T" & contrast %in% c("deltaT", "deltaST", "deltaST - deltaT")))
+           (Assay_environment == "T" & contrast %in% c("deltaT", "deltaST", "deltaST - deltaT")))
 
 # --------------- Cell size
 size_2_way_LMM <- lmer(Mean_cell_area ~ Selection_environment * Assay_environment + (1|Selection_line),
@@ -106,8 +106,8 @@ contrast(emm_speed, cont, by = "Assay_environment") %>%
   filter((Assay_environment == "S" & contrast %in% c("deltaS", "deltaST", "deltaST - deltaS")) |
            (Assay_environment == "T" & contrast %in% c("deltaT", "deltaST", "deltaST - deltaT")))
 
-save(emm_GR, emm_size, emm_speed,
-     file = "Data/Marginal_means_estimates.RData")
+# save(emm_GR, emm_size, emm_speed,
+#      file = "Data/Marginal_means_estimates.RData")
 
 # --------------------------------------------------------------------------------------------------
 # Functional response assay
@@ -147,5 +147,5 @@ FRT_coefs$std.error <- c(sqrt(sum(vcov_matrix[c("bC.log", "bT.log"), c("bC.log",
                          sqrt(sum(vcov_matrix[c("mC", "mT"), c("mC", "mT")])))
 
 # Saving coefficient estimates for plotting (in 05_Manuscript_figures.R)
-save(FRC_coefs, FRS_coefs, FRT_coefs, FRST_coefs,
-     file = "Data/FR assay/04 - FR fits and simulations/Best_fit_estimates_per_environment.RData")
+# save(FRC_coefs, FRS_coefs, FRT_coefs, FRST_coefs,
+#      file = "Data/FR assay/04 - FR fits and simulations/Best_fit_estimates_per_environment.RData")

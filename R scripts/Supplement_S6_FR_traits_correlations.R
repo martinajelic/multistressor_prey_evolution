@@ -2,7 +2,7 @@
 # Supplement S.6: Correlation of prey traits and functional response parameters
 # ----------------------------------------------------------------------------------------------------------------------------------
 # 
-# The following code answers the additional research question: do evolutionary traitchanges in the
+# The following code answers the additional research question: do evolutionary trait changes in the
 # prey species correlate to changes in functional response parameters?
 # 
 # NOTE: this script was run on R version 4.5.2 (provided in folder
@@ -186,6 +186,6 @@ ggdraw(combined) +
     draw_label(paste0("r = ", round(cor_h_size$estimate, digits = 4), ", p = 0.1918"),
                x = 0.837, y = 0.88, vjust = 0, size = 10)
 
-ggsave(filename = "Figures/Figure_S4.pdf",
-       height = 3.6,
-       width = 9.6)
+# ggsave(filename = "Figures/Figure_S4.pdf",
+#        height = 3.6,
+#        width = 9.6)

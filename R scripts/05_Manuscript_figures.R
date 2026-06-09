@@ -4,14 +4,14 @@
 # 
 # The following code yields the two manuscript figures:
 # 
-# - Figure 1: functional response parameters and fits
 # - Figure 3: prey growth rates and traits
+# - Figure 4: functional response parameters and fits
 # 
 # See figure labels in the main text for detailed descriptions.
 # 
 # NOTE: this script was run on R version 4.5.2 (provided in folder
-# "R versions/R version for data analysis"). It will not run on R version 4.3.2 due to package
-# compatibility issues.
+# "R versions/R version for data analysis"). It will not run correctly on R version 4.3.2 due to 
+# package compatibility issues.
 # 
 # ----------------------------------------------------------------------------------------------------------------------------------
 
@@ -136,8 +136,8 @@ facet_row <- plot_grid(facet_plots, ncol = 1)
 plot_grid(legend_row, facet_row, ncol = 1, rel_heights = c(0.18, 1)) +
     theme(plot.margin = margin(0, 20, 0, 40))  # top, right, bottom, left
 
-ggsave(filename = "Figures/Figure_3.pdf",
-       width = 10, height = 3.25)
+# ggsave(filename = "Figures/Figure_3.pdf",
+#        width = 10, height = 3.25)
 
 
 
@@ -171,7 +171,7 @@ ggsave(filename = "Figures/Figure_3.pdf",
 
 
 # --------------------------------------------------------------------------------------------------
-# Figure 3: FR parameters and fits
+# Figure 4: FR parameters and fits
 # --------------------------------------------------------------------------------------------------
 
 rm(list = ls())
@@ -326,8 +326,8 @@ PFR_CST <- ggplot(filter(FR_predictions, Prey_start_density < 1000,
 
 ggpubr::ggarrange(Pb, Ph, Pm, PFR_CS, PFR_CT, PFR_CST, ncol = 3, nrow = 2, labels = "auto", common.legend = T)
 
-ggsave(filename = "Figures/Figure_4.pdf",
-       width = 10, height = 6)
+# ggsave(filename = "Figures/Figure_4.pdf",
+#        width = 10, height = 6)
 
 
 

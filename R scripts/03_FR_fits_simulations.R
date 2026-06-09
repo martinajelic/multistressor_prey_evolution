@@ -406,7 +406,7 @@ FR_predictions <- merge(FR_predictions, FRall_CIs, by = c("SEL_environment", "Pr
   rename(CI_lower = lower,
          CI_upper = upper)
 
-save(FR_predictions, file = "Data/FR assay/04 - FR fits and simulations/Best_fit_curves_and_95%CIs.RData")
+# save(FR_predictions, file = "Data/FR assay/04 - FR fits and simulations/Best_fit_curves_and_95%CIs.RData")
 
 
 

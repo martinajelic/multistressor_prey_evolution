@@ -230,7 +230,6 @@ nll.odeint.full.model = function(Ndead, N0,
     
     ### Environment C
     # Get estimated prey consumed and predator growth given vital rates b, h, r, K, and c
-    # Parameters for S, T and ST are all zero
     # We only need to remove the effect of salinity (represented by C-parameters)
     tempC = eaten.odeint.general.pred(N0 = N0[SEL_environment == "C"],        # Prey start dens
                                       b = exp(bS.log + bC.log),
@@ -245,7 +244,6 @@ nll.odeint.full.model = function(Ndead, N0,
     
     ### Environment S
     # Get estimated prey consumed and predator growth given vital rates b, h, r, K, and c
-    # Parameters for S, T and ST are all zero
     tempS = eaten.odeint.general.pred(N0 = N0[SEL_environment == "S"],        # Prey start dens
                                       b = exp(bS.log),
                                       h = hS,
@@ -259,7 +257,6 @@ nll.odeint.full.model = function(Ndead, N0,
     
     ### Environment T
     # Get estimated prey consumed and predator growth given vital rates b, h, r, K, and c
-    # Parameters for S, T and ST are all zero
     # We need to remove the effect of salinity and add the effect of temperature, plus interaction
     tempT = eaten.odeint.general.pred(N0 = N0[SEL_environment == "T"],        # Prey start dens
                                       b = exp(bS.log + bT.log + bC.log + bST.log),
@@ -274,7 +271,6 @@ nll.odeint.full.model = function(Ndead, N0,
     
     ### Environment ST
     # Get estimated prey consumed and predator growth given vital rates b, h, r, K, and c
-    # Parameters for S, T and ST are all zero
     # We only need to add the effect of temperature
     tempST = eaten.odeint.general.pred(N0 = N0[SEL_environment == "ST"],        # Prey start dens
                                        b = exp(bS.log + bT.log),
@@ -363,8 +359,7 @@ nll.odeint.full.model = function(Ndead, N0,
     
     ### Environment C
     # Get estimated prey consumed and predator growth given vital rates b, h, r, K, and c
-    # Parameters for S, T and ST are all zero
-    # We only need to remove the effect of temperature
+    # We only need to remove the effect of temperature (represented by C-parameters)
     tempC = eaten.odeint.general.pred(N0 = N0[SEL_environment == "C"],        # Prey start dens
                                       b = exp(bT.log + bC.log),
                                       h = hT + hC,
@@ -378,7 +373,6 @@ nll.odeint.full.model = function(Ndead, N0,
     
     ### Environment S
     # Get estimated prey consumed and predator growth given vital rates b, h, r, K, and c
-    # Parameters for S, T and ST are all zero
     # We need to remove the effect of temperature, and add the effect of salinity, plus interaction
     tempS = eaten.odeint.general.pred(N0 = N0[SEL_environment == "S"],        # Prey start dens
                                       b = exp(bT.log + bC.log + bS.log + bST.log),
@@ -393,7 +387,6 @@ nll.odeint.full.model = function(Ndead, N0,
     
     ### Environment T
     # Get estimated prey consumed and predator growth given vital rates b, h, r, K, and c
-    # Parameters for S, T and ST are all zero
     tempT = eaten.odeint.general.pred(N0 = N0[SEL_environment == "T"],        # Prey start dens
                                       b = exp(bT.log),
                                       h = hT,
@@ -407,7 +400,6 @@ nll.odeint.full.model = function(Ndead, N0,
     
     ### Environment ST
     # Get estimated prey consumed and predator growth given vital rates b, h, r, K, and c
-    # Parameters for S, T and ST are all zero
     # We only need to add the effect of salinity
     tempST = eaten.odeint.general.pred(N0 = N0[SEL_environment == "ST"],        # Prey start dens
                                        b = exp(bS.log + bT.log),
