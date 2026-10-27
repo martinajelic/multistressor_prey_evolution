@@ -179,11 +179,11 @@ cor_b_size <- cor.test(FR_traits_comparison$Mean_cell_area, FR_traits_comparison
 cor_h_size <- cor.test(FR_traits_comparison$Mean_cell_area, FR_traits_comparison$h)
 
 ggdraw(combined) +
-    draw_label(paste0("r = ", round(cor_b_speed$estimate, digits = 4), ", p = 0.0121 *"),
+    draw_label(paste0("r = ", round(cor_b_speed$estimate, digits = 4), ", p = ", round(cor_b_speed$p.value, digits = 4), " *"),
                x = 0.19, y = 0.88, vjust = 0, size = 10) +
-    draw_label(paste0("r = ", round(cor_b_size$estimate, digits = 4), ", p = 0.8776"),
+    draw_label(paste0("r = ", round(cor_b_size$estimate, digits = 4), ", p = ", round(cor_b_size$p.value, digits = 4), ""),
                x = 0.515, y = 0.88, vjust = 0, size = 10) +
-    draw_label(paste0("r = ", round(cor_h_size$estimate, digits = 4), ", p = 0.1918"),
+    draw_label(paste0("r = ", round(cor_h_size$estimate, digits = 4), ", p = ", round(cor_h_size$p.value, digits = 4), ""),
                x = 0.837, y = 0.88, vjust = 0, size = 10)
 
 # ggsave(filename = "Figures/Figure_S4.pdf",

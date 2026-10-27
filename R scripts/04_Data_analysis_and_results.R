@@ -32,22 +32,24 @@ library(emmeans)
 # Data
 load("Data/Traits_assay.RData")
 
+traits_assay$Sample_ID <- paste0(traits_assay$Selection_line, "_assay", traits_assay$Assay_environment)
+
 # --------------------------------------------------------------------------------------------------
 # Hypothesis 1: prey growth rates and traits exhibit plastic responses to assay stressors
 # --------------------------------------------------------------------------------------------------
 
 # Growth rates
-GR_4_way_LMM <- lmer(GR ~ Selection_T * Selection_S * Assay_T * Assay_S + (1|Selection_line),
+GR_4_way_LMM <- lmer(GR ~ Selection_T * Selection_S * Assay_T * Assay_S + (1|Selection_line/Sample_ID),
                      traits_assay)
 summary(GR_4_way_LMM)
 
 # Cell size
-size_4_way_LMM <- lmer(Mean_cell_area ~ Selection_T * Selection_S * Assay_T * Assay_S + (1|Selection_line),
+size_4_way_LMM <- lmer(Mean_cell_area ~ Selection_T * Selection_S * Assay_T * Assay_S + (1|Selection_line/Sample_ID),
                        traits_assay)
 summary(size_4_way_LMM)
 
 # Movement speed
-speed_4_way_LMM <- lmer(Mean_movement_speed ~ Selection_T * Selection_S * Assay_T * Assay_S + (1|Selection_line),
+speed_4_way_LMM <- lmer(Mean_movement_speed ~ Selection_T * Selection_S * Assay_T * Assay_S + (1|Selection_line/Sample_ID),
                         traits_assay)
 summary(speed_4_way_LMM)
 
@@ -74,7 +76,7 @@ cont <- list(
 )
 
 # --------------- Growth rate
-GR_2_way_LMM <- lmer(GR ~ Selection_environment * Assay_environment + (1|Selection_line),
+GR_2_way_LMM <- lmer(GR ~ Selection_environment * Assay_environment + (1|Selection_line/Sample_ID),
                      traits_assay)
 emm_GR <- emmeans(GR_2_way_LMM, ~ Selection_environment | Assay_environment)
 
@@ -85,7 +87,7 @@ contrast(emm_GR, cont, by = "Assay_environment") %>%
            (Assay_environment == "T" & contrast %in% c("deltaT", "deltaST", "deltaST - deltaT")))
 
 # --------------- Cell size
-size_2_way_LMM <- lmer(Mean_cell_area ~ Selection_environment * Assay_environment + (1|Selection_line),
+size_2_way_LMM <- lmer(Mean_cell_area ~ Selection_environment * Assay_environment + (1|Selection_line/Sample_ID),
                        traits_assay)
 emm_size <- emmeans(size_2_way_LMM, ~ Selection_environment | Assay_environment)
 
@@ -96,7 +98,7 @@ contrast(emm_size, cont, by = "Assay_environment") %>%
            (Assay_environment == "T" & contrast %in% c("deltaT", "deltaST", "deltaST - deltaT")))
 
 # --------------- Movement speed
-speed_2_way_LMM <- lmer(Mean_movement_speed ~ Selection_environment * Assay_environment + (1|Selection_line),
+speed_2_way_LMM <- lmer(Mean_movement_speed ~ Selection_environment * Assay_environment + (1|Selection_line/Sample_ID),
                        traits_assay)
 emm_speed <- emmeans(speed_2_way_LMM, ~ Selection_environment | Assay_environment)
 
@@ -115,8 +117,6 @@ contrast(emm_speed, cont, by = "Assay_environment") %>%
 
 # Model fitting to FR assay data was done in "R scripts/02_FR_search_grid.R"
 load("Data/FR assay/03 - FR search grid/FR_ANOVA_like_best_fit.RData")
-
-(FR_coefs <- generics::tidy(best_FR_fit))
 
 # Getting the coefficients for each prey selection environment (used in 05_Manuscript_figures.R)
 vcov_matrix <- bbmle::vcov(best_FR_fit)
